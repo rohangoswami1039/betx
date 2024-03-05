@@ -196,7 +196,7 @@ android {
                 project.hasProperty('MYAPP_UPLOAD_KEY_ALIAS') &&
                 project.hasProperty('MYAPP_UPLOAD_KEY_PASSWORD')) {
             // storeFile file("betX\\android\\app\\my-upload-key.keystore")
-            storeFile file("D:\\Internships\\BetX\\backup\\fresh\\fresh\\betX\\android\\app\\my-upload-key.keystore")
+            storeFile file(".\\my-upload-key.keystore")
 
             storePassword 'betx@123456'
             keyAlias 'my-key-alias'
