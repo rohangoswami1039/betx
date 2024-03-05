@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1003555470106",
+    "project_id": "betx-e7062",
+    "storage_bucket": "betx-e7062.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003555470106:android:95fc51381c5ca68f5a8aa3",
+        "android_client_info": {
+          "package_name": "com.betx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1003555470106-g2v609avcuscg3ogucg3adv87ah57bka.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.betx",
+            "certificate_hash": "c71fe912bd53b3917b96e4e262e9b57b194c3737"
+          }
+        },
+        {
+          "client_id": "1003555470106-n4de2nfvrls3645gddhnmq4aq9e4qlvi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkjN2l-B2oR8gG8B-3U2HoCa_2c8Vox0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1003555470106-n4de2nfvrls3645gddhnmq4aq9e4qlvi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

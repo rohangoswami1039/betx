@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "140917884578",
+    "project_id": "betx-ad052",
+    "storage_bucket": "betx-ad052.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140917884578:android:d364e7add5d33478aa79fb",
+        "android_client_info": {
+          "package_name": "com.betx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "140917884578-32t9e2q8mut4ecliis820ifp3g0nu9s1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.betx",
+            "certificate_hash": "9e52d323a68d40b4a492c529ecada747db02ab8a"
+          }
+        },
+        {
+          "client_id": "140917884578-jr4ivctevacljh9l382usd298mrkmh6i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.betx",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "140917884578-sdatgnitqhppr7kscr19m8otqt5l7ljk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.betx",
+            "certificate_hash": "cff5230919fdf70b350e9cbdaacc4bd73a441615"
+          }
+        },
+        {
+          "client_id": "140917884578-nogto58cnnaaaftnkji607anll746j50.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgF4ZJ2vEDHEpOrgg-uYJNCxVLjDmRkeM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "140917884578-nogto58cnnaaaftnkji607anll746j50.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
