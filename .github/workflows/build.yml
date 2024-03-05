@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm install --force
 
+      - name: Grant execute permission to Gradle wrapper
+        run: chmod +x ./android/gradlew
+
       - name: Build Android
         run: |
           cd android && ./gradlew assembleRelease
