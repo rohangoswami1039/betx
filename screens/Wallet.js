@@ -6,9 +6,7 @@ import firestore from '@react-native-firebase/firestore';
 
 export default function Wallet(props) {
   const [localCode, setLocalCode] = useState('');
-  const [inputCode, setInputCode] = useState('');
   const [showAvatar, setShowAvatar] = useState(true);
-  const [refralCode, setRefralCode] = useState('');
   const [coins,set_coins] = useState('');
 
   const generateUniqueCode = () => {
@@ -18,23 +16,31 @@ export default function Wallet(props) {
     return uniqueCode;
   };
 
-  const Coincheck = async () => {
-    const UserRef = firestore().collection('Users').doc(auth().currentUser.uid);
-     UserRef.onSnapshot((doc) => {
-      set_coins(doc.data().coins);
-    })
-  }
 
-  useEffect(() => {
-    Coincheck()
-  },[])
+const checkCoins = () => {
+  const userRef = firestore().collection('Users').doc(auth().currentUser.uid);
+  const unsubscribe = userRef.onSnapshot((doc) => {
+    if (!doc.exists) {
+      console.log("No such document!");
+    } else {
+      const userCoins = doc.data().coin || 'N/A' ;
+      set_coins(userCoins);
+    }
+  });
+  return unsubscribe;
+};
 
+useEffect(() => {
+  const unsubscribe = checkCoins();
+  return () => {
+    unsubscribe();
+  };
+}, []);
 
 
   const check = async () => {
-    const user = auth().currentUser;
     const userRef = firestore().collection('Users').doc(user.uid);
-    await userRef.get().then((doc) => {
+    const unsubscribe = userRef.onSnapshot((doc) => {
       if(!doc.exists) {
         console.log("No such document!");
       }
@@ -46,6 +52,7 @@ export default function Wallet(props) {
         setLocalCode(referCode);
       }
     })
+    return unsubscribe;
 };
 
   const write_referal_code = async () => {
@@ -53,15 +60,15 @@ export default function Wallet(props) {
     setLocalCode(code);
     const user = auth().currentUser;
     if (user) {
-      const referRef = firestore().collection('rewards').doc(localCode);
+      const referRef = firestore().collection('refrals').doc(code);
       await referRef.set({
-        code: localCode,
+        code: code,
         created_by: user.uid
       }).then(() => {
         console.log("User code has been written to refer ")
         const userRef = firestore().collection('Users').doc(user.uid);
         userRef.update({
-          refer_code: localCode
+          refer_code: code
         }).then(() => {
           console.log("Data has been written to Users location also")
         }).catch((error) => {
@@ -87,19 +94,7 @@ export default function Wallet(props) {
     };
   }, []);
 
-  const handleInputChange = (text) => {
-    setInputCode(text);
-  }
-
-  const handleReferEarn = () => {
-    if (inputCode.trim() !== "") {
-      setRefralCode(inputCode.trim());
-    } else {
-      alert("Please enter a valid referral code.");
-    }
-  }
-  console.log(refralCode, "refralCode")
-
+  
   return (
     <View style={{ flex: 1, backgroundColor: '#101010' }}>
       <ImageBackground
@@ -116,7 +111,7 @@ export default function Wallet(props) {
                     <Coin />
                   </View>
                   <View style={{ marginTop: 6 }}>
-                    <Text style={{ color: 'white', marginLeft: 15, fontSize: 16, fontWeight: 'bold' }}>{0}</Text>
+                    <Text style={{ color: 'white', marginLeft: 15, fontSize: 16, fontWeight: 'bold' }}>{coins}</Text>
                   </View>
                 </View>
               </View>
@@ -126,7 +121,7 @@ export default function Wallet(props) {
             </View>
           </View>
 
-          <View style={{ flex: 1, borderRadius: 25, backgroundColor: '#21152D', margin: 20, borderWidth: 1, borderColor: 'white', overflow: 'hidden' }}>
+          <View style={{ flex: 2, borderRadius: 25, backgroundColor: '#21152D', margin: 20, borderWidth: 1, borderColor: 'white', overflow: 'hidden' }}>
             <ImageBackground
               source={require('../assets/reward_background.png')}
               style={{ flex: 1, resizeMode: 'cover', borderRadius: 25 }}
@@ -157,9 +152,11 @@ export default function Wallet(props) {
                     </View>
                   )}
                 </View>
-
               </View>
             </ImageBackground>
+          </View>
+          <View style={{ height:70,backgroundColor:'rgba(78, 76, 79,0.3)',margin:20,borderRadius:25,justifyContent:'center',alignItems:'center'}}>
+            <Text style={{color:'white',fontSize:20,fontWeight:'bold'}}>Your 3 Friends Joined</Text>
           </View>
           
         </View>

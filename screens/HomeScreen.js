@@ -15,6 +15,7 @@ function HomeScreen(props) {
   const [IPL,set_IPL]=useState(true)
   const [modalVisible, setModalVisible] = useState(true);
   const initialRef = useRef(null);
+  const [refercode ,set_refercode]=useState('')
   const finalRef = useRef(null);
 
   useEffect(() => {
@@ -134,7 +135,8 @@ function HomeScreen(props) {
   );
   
   const handle_refer = ()=>{
-
+    console.log("Handle Refer Clicked")
+    console.log(refercode)
   }
 
 
@@ -154,10 +156,13 @@ function HomeScreen(props) {
 
             <FormControl>
               <View style={{height:60,width:250,backgroundColor:"#26123D",justifyContent:'center'}}>
-                <Input style={{color:"white",textAlign:"center",fontSize:26,fontWeight:'bold'}} ref={initialRef} />
+                <Input style={{color:"white",textAlign:"center",fontSize:26,fontWeight:'bold'}} 
+                       ref={initialRef} 
+                       onChange={(e) => set_refercode(e.nativeEvent.text)}                       
+                       />
               </View>
             </FormControl>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handle_refer}>
               <View style={{height:50,width:250,backgroundColor:"#85057A",borderRadius:7,marginTop:20,justifyContent:'center'}}>
                 <Text style={{color:"white",textAlign:"center",fontSize:20,fontWeight:'bold'}}>Refer & Earn</Text>
               </View>
