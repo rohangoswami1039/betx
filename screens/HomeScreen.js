@@ -1,21 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TouchableOpacity, StyleSheet, View, Text, ImageBackground, useWindowDimensions, FlatList } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { BetexLogo, Wallet, Notification } from '../assets/icons';
+import { BetexLogo, Wallet, Notification, Avatar1, Avatar3, Refer_Avatar } from '../assets/icons';
 import { Corosel, MatchBanner } from '../Components';
 import firestore from '@react-native-firebase/firestore'; 
+import { Button, FormControl, Input, Modal } from 'native-base';
 function HomeScreen(props) {
   const [matchlist, setMatchlist] = useState([]);
   const [loading, setLoading] = useState(true);
-  const mountedRef = useRef(true); // Ref to track component mount state
+  const mountedRef = useRef(true); 
   const[progres, setProgress] = useState(0);
   const [routes,set_routes]=useState([])
 
   const [IPL,set_IPL]=useState(true)
+  const [modalVisible, setModalVisible] = useState(true);
+  const initialRef = useRef(null);
+  const finalRef = useRef(null);
 
   useEffect(() => {
     return () => {
-      mountedRef.current = false; // Set mounted to false when component unmounts
+      mountedRef.current = false; 
     };
   }, []);
 
@@ -80,15 +84,11 @@ function HomeScreen(props) {
     </View>
   );
 
-  const ThirdRoute = () => (
-    <View style={{ flex: 1 }}>
-    </View>
-  );
+
 
   const renderScene = SceneMap({
     first: FirstRoute,
     second: SecondRoute,
-    third: ThirdRoute
   });
 
   const [index, setIndex] = useState(0);
@@ -100,7 +100,6 @@ function HomeScreen(props) {
           set_routes([
             { key: 'first', title: 'Prediction' },
             { key: 'second', title: 'IPL Sessions' },
-            { key: 'third', title: 'Fantasy' }
           ])
         )
       }
@@ -133,9 +132,42 @@ function HomeScreen(props) {
       )}
     />
   );
+  
+  const handle_refer = ()=>{
+
+  }
+
+
+
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#101010' }}>
+    <>
+      <Modal  isOpen={modalVisible} onClose={() => setModalVisible(false)} initialFocusRef={initialRef} finalFocusRef={finalRef}>
+        <Modal.Content style={{backgroundColor:'#21152D',margin:15}}> 
+            <Modal.CloseButton onPress={()=>{setModalVisible(false)}} style={{marginBottom:5}} />
+          <Modal.Body>
+            <View style={{justifyContent:"center",alignItems:'center'}}>
+              <Refer_Avatar/>
+              <Text style={{color:'white',fontSize:20,fontWeight:'bold',marginBottom:20}}>Have a referal code ?</Text>
+              <Text style={{color:'white',fontSize:16,fontWeight:'normal',marginBottom:20,textAlign:"center"}}>Enter the refferal code here to win exciting rewards</Text>
+            </View>        
+
+            <FormControl>
+              <View style={{height:60,width:250,backgroundColor:"#26123D",justifyContent:'center'}}>
+                <Input style={{color:"white",textAlign:"center",fontSize:26,fontWeight:'bold'}} ref={initialRef} />
+              </View>
+            </FormControl>
+            <TouchableOpacity>
+              <View style={{height:50,width:250,backgroundColor:"#85057A",borderRadius:7,marginTop:20,justifyContent:'center'}}>
+                <Text style={{color:"white",textAlign:"center",fontSize:20,fontWeight:'bold'}}>Refer & Earn</Text>
+              </View>
+            </TouchableOpacity>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>
+
+
+      <View style={{ flex: 1, backgroundColor: '#101010' }}>
       <ImageBackground
         source={require('../assets/images/background.png')}
         style={{ flex: 1, resizeMode: 'cover' }}
@@ -147,9 +179,7 @@ function HomeScreen(props) {
               <TouchableOpacity onPress={()=>{props.navigation.navigate("Wallet")}} style={{ marginHorizontal: 10 }}>
                 <Wallet />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => props.navigation.navigate("Notification")} style={{ marginHorizontal: 10 }}>
-                <Notification />
-              </TouchableOpacity>
+
             </View>
           </View>
 
@@ -170,6 +200,8 @@ function HomeScreen(props) {
         
       </ImageBackground>
     </View>
+    </>
+    
   );
 }
 

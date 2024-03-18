@@ -30,40 +30,8 @@ import{
 
   const Tab = createBottomTabNavigator();
   
- // const user = auth().currentUser;
-
   export default function App(props) {
-
-    useEffect(() => {
-      // if(auth().currentUser){
-      //   // getUser()
-      //   console.log('user from main home screen '+auth().currentUser)
-      // }else{
-      //   console.log("Current user not found in main home screen")
-      // }
-      
-    }, [])
-
-  // //get user to firebase
-  // async function getUser(){
-    
-  //   firestore()
-  //     .collection('Users')
-  //     .doc(auth().currentUser.uid)
-  //     .onSnapshot(documentSnapshot => {
-  //       if(documentSnapshot.exists){
-  //         if(!documentSnapshot.data().name){
-  //             console.log("navigate to profile");
-  //             props.navigation.navigate("Profile");
-  //         }
-  //       }
-        
-  //     });
-   
-  // }
-
     return (
-      
         <Tab.Navigator 
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {

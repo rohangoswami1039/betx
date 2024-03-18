@@ -70,3 +70,4 @@ export {default as VS}from '../VS.svg'
 
 //conins icon 
 export {default as Coin} from '../Coin.svg'
+export {default as Refer_Avatar} from '../avatars/refer_avatar.svg'
