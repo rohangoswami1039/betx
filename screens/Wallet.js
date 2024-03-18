@@ -158,21 +158,6 @@ export default function Wallet(props) {
                   )}
                 </View>
 
-                <View style={{ borderRadius: 25, }}>
-                  <View style={{ alignItems: 'center', marginTop: 10 }}>
-                    <TextInput
-                     style={{ paddingHorizontal: 20,fontSize: 16,color: 'white',backgroundColor:"#26123D",borderRadius:25,borderWidth:1,borderColor:"white",marginBottom:10,width:250,alignSelf:"center"}}
-                     // style={styles.input}
-                      onChangeText={handleInputChange}
-                      value={inputCode}
-                      placeholder="Enter Referral Code"
-                      placeholderTextColor="#888"
-                    />
-                    <TouchableOpacity onPress={handleReferEarn} style={styles.button}>
-                      <Text style={styles.buttonText}>Get Coins</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
               </View>
             </ImageBackground>
           </View>
