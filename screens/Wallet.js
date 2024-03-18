@@ -1,8 +1,105 @@
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { RewardAvatar, BetexLogo, Coin, Notification } from '../assets/icons'
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore'; 
 
 export default function Wallet(props) {
+  const [localCode, setLocalCode] = useState('');
+  const [inputCode, setInputCode] = useState('');
+  const [showAvatar, setShowAvatar] = useState(true);
+  const [refralCode, setRefralCode] = useState('');
+  const [coins,set_coins] = useState('');
+
+  const generateUniqueCode = () => {
+    const randomString = Math.random().toString(36).substring(2, 6);
+    const timestamp = Date.now();
+    const uniqueCode = randomString + timestamp.toString().slice(-2); 
+    return uniqueCode;
+  };
+
+  const Coincheck = async () => {
+    const UserRef = firestore().collection('Users').doc(auth().currentUser.uid);
+     UserRef.onSnapshot((doc) => {
+      set_coins(doc.data().coins);
+    })
+  }
+
+  useEffect(() => {
+    Coincheck()
+  },[])
+
+
+
+  const check = async () => {
+    const user = auth().currentUser;
+    const userRef = firestore().collection('Users').doc(user.uid);
+    await userRef.get().then((doc) => {
+      if(!doc.exists) {
+        console.log("No such document!");
+      }
+      else if(!doc.data().refer_code){
+        write_referal_code()
+      }
+      else {
+        const referCode = doc.data().refer_code;
+        setLocalCode(referCode);
+      }
+    })
+};
+
+  const write_referal_code = async () => {
+    const code = generateUniqueCode();
+    setLocalCode(code);
+    const user = auth().currentUser;
+    if (user) {
+      const referRef = firestore().collection('rewards').doc(localCode);
+      await referRef.set({
+        code: localCode,
+        created_by: user.uid
+      }).then(() => {
+        console.log("User code has been written to refer ")
+        const userRef = firestore().collection('Users').doc(user.uid);
+        userRef.update({
+          refer_code: localCode
+        }).then(() => {
+          console.log("Data has been written to Users location also")
+        }).catch((error) => {
+          console.log(error)
+        })
+      }).catch((error) => {
+        console.log(error)
+      });
+    }
+  }
+
+  useEffect(() => {
+    check();
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setShowAvatar(false);
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setShowAvatar(true);
+    });
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  const handleInputChange = (text) => {
+    setInputCode(text);
+  }
+
+  const handleReferEarn = () => {
+    if (inputCode.trim() !== "") {
+      setRefralCode(inputCode.trim());
+    } else {
+      alert("Please enter a valid referral code.");
+    }
+  }
+  console.log(refralCode, "refralCode")
+
   return (
     <View style={{ flex: 1, backgroundColor: '#101010' }}>
       <ImageBackground
@@ -19,7 +116,7 @@ export default function Wallet(props) {
                     <Coin />
                   </View>
                   <View style={{ marginTop: 6 }}>
-                    <Text style={{ color: 'white', marginLeft: 15, fontSize: 16, fontWeight: 'bold' }}>{300}</Text>
+                    <Text style={{ color: 'white', marginLeft: 15, fontSize: 16, fontWeight: 'bold' }}>{0}</Text>
                   </View>
                 </View>
               </View>
@@ -44,33 +141,78 @@ export default function Wallet(props) {
                 </View>
 
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                  <View style={{ marginTop:-5,}}>
-                    <View style={{marginLeft:25}}>
-                      <RewardAvatar />
+                  {showAvatar && (
+                    <View style={{marginTop:-5,}}>
+                      <View style={{marginLeft:25}}>
+                        <RewardAvatar />
+                      </View>
+                      <View style={{height:60,width:250,backgroundColor:"#26123D",borderRadius:25,borderWidth:1,borderColor:"white",justifyContent:'center'}}>
+                        <Text style={{color:"white",textAlign:"center",fontSize:26,fontWeight:'bold'}}>{localCode}</Text>
+                      </View>
+                      <TouchableOpacity>
+                        <View style={{height:60,width:250,backgroundColor:"#85057A",borderRadius:7,marginTop:20,justifyContent:'center'}}>
+                          <Text style={{color:"white",textAlign:"center",fontSize:20}}>Refer & Earn</Text>
+                        </View>
+                      </TouchableOpacity>
                     </View>
-                    <View style={{height:60,width:250,backgroundColor:"#26123D",borderRadius:25,borderWidth:1,borderColor:"white",justifyContent:'center'}}>
-                      <Text style={{color:"white",textAlign:"center",fontSize:26,fontWeight:'bold',textTransform: 'uppercase'}}>qwerty</Text>
-                    </View>
-                    <TouchableOpacity>
-                    <View style={{height:60,width:250,backgroundColor:"#85057A",borderRadius:7,marginTop:20,justifyContent:'center'}}>
-                      <Text style={{color:"white",textAlign:"center",fontSize:20}}>Refer & Earn</Text>
-                    </View>
+                  )}
+                </View>
+
+                <View style={{ borderRadius: 25, }}>
+                  <View style={{ alignItems: 'center', marginTop: 10 }}>
+                    <TextInput
+                     style={{ paddingHorizontal: 20,fontSize: 16,color: 'white',backgroundColor:"#26123D",borderRadius:25,borderWidth:1,borderColor:"white",marginBottom:10,width:250,alignSelf:"center"}}
+                     // style={styles.input}
+                      onChangeText={handleInputChange}
+                      value={inputCode}
+                      placeholder="Enter Referral Code"
+                      placeholderTextColor="#888"
+                    />
+                    <TouchableOpacity onPress={handleReferEarn} style={styles.button}>
+                      <Text style={styles.buttonText}>Get Coins</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
-
               </View>
             </ImageBackground>
           </View>
-          <View style={{ height: 70, backgroundColor: 'rgba(80, 77, 84,0.45)', borderRadius: 25, margin: 20,justifyContent:"center" }}>
-            <View style={{justifyContent:"space-between"}}>
-                <Text style={{color:"white",textAlign:"center",fontSize:20}}>Your 3 Friends Joined</Text>
-            </View>
-          </View>
+          
         </View>
       </ImageBackground>
     </View>
   )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  inputContainer: {
+    backgroundColor: 'rgba(80, 77, 84, 0.8)',
+    borderRadius: 25,
+    margin: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+  },
+  input: {
+    height: 50,
+    width: '100%',
+    borderColor: 'transparent',
+    borderRadius: 10,
+    backgroundColor: '#333',
+    paddingHorizontal: 20,
+    fontSize: 18,
+    color: 'white',
+  },
+  button: {
+    backgroundColor: '#85057A',
+    marginTop: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 20,
+    elevation: 3,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+})

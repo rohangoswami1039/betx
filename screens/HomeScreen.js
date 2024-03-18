@@ -9,6 +9,9 @@ function HomeScreen(props) {
   const [loading, setLoading] = useState(true);
   const mountedRef = useRef(true); // Ref to track component mount state
   const[progres, setProgress] = useState(0);
+  const [routes,set_routes]=useState([])
+
+  const [IPL,set_IPL]=useState(true)
 
   useEffect(() => {
     return () => {
@@ -45,7 +48,7 @@ function HomeScreen(props) {
       });
   
     return () => {
-      unsubscribe(); // Unsubscribe from the snapshot listener when component unmounts
+      unsubscribe(); 
     };
   }
 
@@ -89,11 +92,28 @@ function HomeScreen(props) {
   });
 
   const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: 'first', title: 'Prediction' },
-    { key: 'second', title: 'IPL Sessions' },
-    { key: 'third', title: 'Fantasy' }
-  ]);
+
+  useEffect(()=>{
+    const set_Handle_IPL=()=> {
+      if(IPL){
+        return(
+          set_routes([
+            { key: 'first', title: 'Prediction' },
+            { key: 'second', title: 'IPL Sessions' },
+            { key: 'third', title: 'Fantasy' }
+          ])
+        )
+      }
+      else {
+        set_routes([
+          { key: 'first', title: ' ' },
+        ])
+      }
+    }
+    set_Handle_IPL()
+  },[])
+
+
 
   const layout = useWindowDimensions();
 

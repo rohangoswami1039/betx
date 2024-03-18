@@ -4,12 +4,15 @@ import auth from '@react-native-firebase/auth';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore'; 
 
 const GmailSignIn = (props) => {
   const navigation = useNavigation()
 
   useEffect(() => {
-     GoogleSignin.configure();
+    GoogleSignin.configure({
+      webClientId: '140917884578-nogto58cnnaaaftnkji607anll746j50.apps.googleusercontent.com',
+    });
   }, []);
 
 
@@ -17,19 +20,25 @@ const GmailSignIn = (props) => {
     try {
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signOut();
-      const userInfo = await GoogleSignin.signIn();
+      const { idToken } = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const userInfo = await auth().signInWithCredential(googleCredential);
       console.log('user info', userInfo);
-      if (userInfo) {
-        try {
-          await AsyncStorage.setItem('userData', JSON.stringify(userInfo));
-          console.log('User mobile number with gmail saved in AsyncStorage.');
-          //props.navigation.replace('MainHome');
-          //navigation.replace('MainHome');
-          navigation.navigate('MainHome');
-        } catch (error) {
-          console.log('Error saving user in  gmail login in AsyncStorage: and firebase ', error);
-        }
+      if(userInfo){
+        const userRef = firestore().collection('Users').doc(auth().currentUser.uid)
+        await userRef.set({
+          name: userInfo.user.displayName,
+          email: userInfo.user.email,
+          photoURL: userInfo.user.photoURL,
+          coin:'0',
+        }).then(() => {
+          console.log('User created successfully!');
+        }).catch((e)=>{
+          console.log(e)
+        })
+        
       }
+
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         console.log("SIGN_IN_CANCELLED")

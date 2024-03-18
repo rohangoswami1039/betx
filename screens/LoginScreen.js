@@ -61,6 +61,7 @@ export default function LoginScreen(props) {
     };
   }, []);
 
+  /*
   useEffect(() => {
     check();
   }, [check]);
@@ -79,7 +80,7 @@ export default function LoginScreen(props) {
       console.log('Error retrieving user mobile number from AsyncStorage: ', error);
     }
   };
-
+*/
   async function saveUser() {
     console.log('save user called');
     if (user) {
