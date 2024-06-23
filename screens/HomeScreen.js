@@ -1,26 +1,41 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { TouchableOpacity, StyleSheet, View, Text, ImageBackground, useWindowDimensions, FlatList } from 'react-native';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { BetexLogo, Wallet, Notification, Avatar1, Avatar3, Refer_Avatar } from '../assets/icons';
-import { Corosel, MatchBanner } from '../Components';
-import firestore from '@react-native-firebase/firestore'; 
-import { Button, FormControl, Input, Modal } from 'native-base';
+import React, {useState, useEffect, useRef} from 'react';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  Text,
+  ImageBackground,
+  useWindowDimensions,
+  FlatList,
+} from 'react-native';
+import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
+import {
+  BetexLogo,
+  Wallet,
+  Notification,
+  Avatar1,
+  Avatar3,
+  Refer_Avatar,
+} from '../assets/icons';
+import {Corosel, MatchBanner} from '../Components';
+import firestore from '@react-native-firebase/firestore';
+import {Button, FormControl, Input, Modal} from 'native-base';
 function HomeScreen(props) {
   const [matchlist, setMatchlist] = useState([]);
   const [loading, setLoading] = useState(true);
-  const mountedRef = useRef(true); 
-  const[progres, setProgress] = useState(0);
-  const [routes,set_routes]=useState([])
+  const mountedRef = useRef(true);
+  const [progres, setProgress] = useState(0);
+  const [routes, set_routes] = useState([]);
 
-  const [IPL,set_IPL]=useState(true)
+  const [IPL, set_IPL] = useState(true);
   const [modalVisible, setModalVisible] = useState(true);
   const initialRef = useRef(null);
-  const [refercode ,set_refercode]=useState('')
+  const [refercode, set_refercode] = useState('');
   const finalRef = useRef(null);
 
   useEffect(() => {
     return () => {
-      mountedRef.current = false; 
+      mountedRef.current = false;
     };
   }, []);
 
@@ -33,13 +48,13 @@ function HomeScreen(props) {
   function getMatches() {
     const nowPlus10 = new Date();
     nowPlus10.setMinutes(new Date().getMinutes() - 10);
-    console.log("Match Date check >>> ",nowPlus10);
-  
+    console.log('Match Date check >>> ', nowPlus10);
+
     setLoading(true);
     setMatchlist([]);
-  
+
     const unsubscribe = firestore()
-      .collection('Matches')
+      .collection('Matches_Test')
       .where('matchDate', '>=', nowPlus10)
       .orderBy('matchDate')
       .onSnapshot(querySnapshot => {
@@ -47,13 +62,13 @@ function HomeScreen(props) {
         const matches = [];
         querySnapshot.forEach(doc => {
           console.log(doc);
-          matches.push({ ...doc.data(), key: doc.id });
+          matches.push({...doc.data(), key: doc.id});
         });
         setMatchlist(matches);
       });
-  
+
     return () => {
-      unsubscribe(); 
+      unsubscribe();
     };
   }
 
@@ -62,30 +77,30 @@ function HomeScreen(props) {
       setProgress(Number(matchlist[0].vote));
     }
   }, [matchlist]);
-  console.log(matchlist)
-
+  console.log(matchlist);
 
   const FirstRoute = () => (
     <FlatList
-    style={{flex:1}}
-    data={matchlist}
-    keyExtractor={(item, index) => index.toString()}
-    renderItem={({ item }) => <MatchBanner match={item} />}
-    ListEmptyComponent={() => (
-      <Text style={{ color: 'red', fontSize: 20, marginTop: 30, textAlign: 'center' }}>
-        No Prediction Available
-      </Text>
-    )}
-    contentContainerStyle={{ flexGrow: 1 }}
-  />
+      style={{flex: 1}}
+      data={matchlist}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({item}) => <MatchBanner match={item} />}
+      ListEmptyComponent={() => (
+        <Text
+          style={{
+            color: 'red',
+            fontSize: 20,
+            marginTop: 30,
+            textAlign: 'center',
+          }}>
+          No Prediction Available
+        </Text>
+      )}
+      contentContainerStyle={{flexGrow: 1}}
+    />
   );
 
-  const SecondRoute = () => (
-    <View style={{ flex: 1}}>
-    </View>
-  );
-
-
+  const SecondRoute = () => <View style={{flex: 1}}></View>;
 
   const renderScene = SceneMap({
     first: FirstRoute,
@@ -94,124 +109,81 @@ function HomeScreen(props) {
 
   const [index, setIndex] = useState(0);
 
-  useEffect(()=>{
-    const set_Handle_IPL=()=> {
-      if(IPL){
-        return(
-          set_routes([
-            { key: 'first', title: 'Prediction' },
-            { key: 'second', title: 'IPL Sessions' },
-          ])
-        )
+  useEffect(() => {
+    const set_Handle_IPL = () => {
+      if (IPL && false) {
+        return set_routes([
+          {key: 'first', title: 'Prediction'},
+          {key: 'second', title: 'IPL Sessions'},
+        ]);
+      } else {
+        set_routes([{key: 'first', title: ' '}]);
       }
-      else {
-        set_routes([
-          { key: 'first', title: ' ' },
-        ])
-      }
-    }
-    set_Handle_IPL()
-  },[])
-
-
+    };
+    set_Handle_IPL();
+  }, []);
 
   const layout = useWindowDimensions();
 
   const renderTabBar = props => (
     <TabBar
       {...props}
-      indicatorStyle={{ backgroundColor: 'rgba(0,0,0,0)'}}
-      style={{ backgroundColor: 'rgba(0,0,0,0)' }}
-      renderLabel={({ route, focused, color }) => (
-        <Text style={{ color: focused ? '#FFFFFF' : '#777777', 
-                       margin: 8,
-                       fontWeight:'bold' ,
-                       textShadowColor:focused ? '#fff' : '',
-                       textShadowOffset:focused ? { width: 0, height: 0 }:{ width: 0, height: 0 },
-                       textShadowRadius:focused ? 10:0, 
-                      }}>{route.title}</Text>
+      indicatorStyle={{backgroundColor: 'rgba(0,0,0,0)'}}
+      style={{backgroundColor: 'rgba(0,0,0,0)'}}
+      renderLabel={({route, focused, color}) => (
+        <Text
+          style={{
+            color: focused ? '#FFFFFF' : '#777777',
+            margin: 8,
+            fontWeight: 'bold',
+            textShadowColor: focused ? '#fff' : '',
+            textShadowOffset: focused
+              ? {width: 0, height: 0}
+              : {width: 0, height: 0},
+            textShadowRadius: focused ? 10 : 0,
+          }}>
+          {route.title}
+        </Text>
       )}
     />
   );
-  
-  const handle_refer = ()=>{
-    console.log("Handle Refer Clicked")
-    console.log(refercode)
-  }
 
-
-
+  const handle_refer = () => {
+    console.log('Handle Refer Clicked');
+    console.log(refercode);
+  };
 
   return (
     <>
-      <Modal  isOpen={modalVisible} onClose={() => setModalVisible(false)} initialFocusRef={initialRef} finalFocusRef={finalRef}>
-        <Modal.Content style={{backgroundColor:'#21152D',margin:15}}> 
-            <Modal.CloseButton onPress={()=>{setModalVisible(false)}} style={{marginBottom:5}} />
-          <Modal.Body>
-            <View style={{justifyContent:"center",alignItems:'center'}}>
-              <Refer_Avatar/>
-              <Text style={{color:'white',fontSize:20,fontWeight:'bold',marginBottom:20}}>Have a referal code ?</Text>
-              <Text style={{color:'white',fontSize:16,fontWeight:'normal',marginBottom:20,textAlign:"center"}}>Enter the refferal code here to win exciting rewards</Text>
-            </View>        
-
-            <FormControl>
-              <View style={{height:60,width:250,backgroundColor:"#26123D",justifyContent:'center'}}>
-                <Input style={{color:"white",textAlign:"center",fontSize:26,fontWeight:'bold'}} 
-                       ref={initialRef} 
-                       onChange={(e) => set_refercode(e.nativeEvent.text)}                       
-                       />
-              </View>
-            </FormControl>
-            <TouchableOpacity onPress={handle_refer}>
-              <View style={{height:50,width:250,backgroundColor:"#85057A",borderRadius:7,marginTop:20,justifyContent:'center'}}>
-                <Text style={{color:"white",textAlign:"center",fontSize:20,fontWeight:'bold'}}>Refer & Earn</Text>
-              </View>
-            </TouchableOpacity>
-          </Modal.Body>
-        </Modal.Content>
-      </Modal>
-
-
-      <View style={{ flex: 1, backgroundColor: '#101010' }}>
-      <ImageBackground
-        source={require('../assets/images/background.png')}
-        style={{ flex: 1, resizeMode: 'cover' }}
-      >
-        <View style={{flex:1}}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
-            <BetexLogo style={{ margin:10, width: 40, height: 50 }} />
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity onPress={()=>{props.navigation.navigate("Wallet")}} style={{ marginHorizontal: 10 }}>
-                <Wallet />
-              </TouchableOpacity>
-
-            </View>
+      <View style={{flex: 1, backgroundColor: '#181829'}}>
+        <View style={{flex: 1}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              padding: 10,
+            }}>
+            <BetexLogo style={{margin: 10, width: 40, height: 50}} />
           </View>
 
-
-          <View style={{ paddingHorizontal: 20 }}>
+          <View style={{paddingHorizontal: 20}}>
             <Corosel />
           </View>
 
           <TabView
-            navigationState={{ index, routes }}
+            navigationState={{index, routes}}
             renderScene={renderScene}
             renderTabBar={renderTabBar}
             onIndexChange={setIndex}
-            initialLayout={{ width: layout.width }}
-            style={{marginBottom:70}}
+            initialLayout={{width: layout.width}}
+            style={{marginBottom: 70}}
           />
         </View>
-        
-      </ImageBackground>
-    </View>
+      </View>
     </>
-    
   );
 }
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({
-
-})
+const styles = StyleSheet.create({});

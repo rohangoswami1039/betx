@@ -1,307 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
-import LoadingModal from './LoadingModal.js';
-import LinearGradient from 'react-native-linear-gradient';
-import firestore from '@react-native-firebase/firestore';
-import { TrendingNews, TrendingNewsBanner } from '../Components';
+import React, {useState, useEffect} from 'react';
 import {
-  Cricket,
-  Basketball,
-  Football,
-  BaseBall,
-  Tennis,
-  VollyBall,
-  IceHockey,
-  Handball,
-  Rugby
-} from '../assets/icons'
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+  TouchableOpacity,
+  Button,
+  RefreshControl,
+} from 'react-native';
+import axios from 'axios';
+import LoadingModal from './LoadingModal.js';
+import {WebView} from 'react-native-webview';
+import {ArrowBackIcon} from 'native-base';
+
 function ExploreScreen(props) {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
-  const [showGame, setShowScreen] = useState('Cricket');
-  const [newsList, setNewsList] = useState([]);
-  const [newsListTrending, setNewsListTrending] = useState([]);
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [news, setNews] = useState([]);
+  const [selectedNews, setSelectedNews] = useState(null);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const [news, SetNews]= useState();
-  // useEffect(() => {
-  //   getMatchesFromDatabase(showGame);
-  // }, [showGame]);
-  // useEffect(() => {
-  //   getTrendingNews();
-  // }, []);
+  const fetchNews = async () => {
+    try {
+      setShowLoadingModal(true);
+      const url = `https://newsapi.org/v2/top-headlines?apiKey=930a6f37257d41cd9dcb935bc2225c45&category=sports&language=en`;
+      const response = await axios.get(url);
+      setNews(response.data.articles);
+      console.log('News Data', response.data.articles);
+      setShowLoadingModal(false);
+    } catch (error) {
+      console.error(error);
+      setShowLoadingModal(false);
+    }
+  };
 
-  // function getTrendingNews() {
-  //   setNewsListTrending([]);
-  //   //console.log('getTrendingNews')
-  //   firestore()
-  //     .collection('News')
-  //     .where('trending', '==', true)
-  //     .orderBy("dateTime", "desc")
-  //     .onSnapshot(querySnapshot => {
-  //       const li = [];
-  //       // console.log("dataaaaa "+querySnapshot);
-  //       try {
-  //         querySnapshot.forEach(documentSnapshot => {
-  //           li.push({ ...documentSnapshot.data(), key: documentSnapshot.id });
-  //         });
-  //         setNewsListTrending(li)
-  //       } catch (error) {
-  //         console.log('Error while getting trending news ' + error);
-  //       }
-  //       // console.log("newsList"+newsList)
-  //     })
-  // }
+  useEffect(() => {
+    fetchNews();
+  }, []);
 
-  // function getMatchesFromDatabase(gamename) {
-  //   setNewsList([]);
-    //console.log('getMatchesFromDatabase')
-    // console.log("Game name = "+gamename)
-    // firestore()
-    //       .collection('News')
-    //       .where('matchType','==',gamename)
-    //       .orderBy("dateTime")
-    //       .onSnapshot(querySnapshot => {
-    //         console.log("querySnapshot"+querySnapshot);
-    //         const li = [];
-    //         if(querySnapshot){
-    //           querySnapshot.forEach(documentSnapshot => {
-    //             li.push({...documentSnapshot.data() , key:documentSnapshot.id});
-    //             });
-    //         }
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchNews();
+    setRefreshing(false);
+  };
 
-    //         setNewsList(li)
-    //         // console.log("newsList"+newsList)
-    //       })
-
-  //   firestore()
-  //     .collection('News')
-  //     // Order results
-  //     .where('matchType', '==', gamename)
-  //     // .orderBy('dateTime', 'desc')
-  //     .orderBy("dateTime", "desc")
-  //     .get()
-  //     .then(querySnapshot => {
-  //       const li = [];
-  //       // console.log("query data: " + querySnapshot.exists);
-  //       querySnapshot.forEach(documentSnapshot => {
-  //         // console.log("datab  sss")
-  //         li.push({ ...documentSnapshot.data(), key: documentSnapshot.id });
-  //       });
-  //       setNewsList(li)
-  //     }).catch(err => {
-  //       console.log("Error: " + err)
-  //     });
-  // }
-
-
-
-  
-
-  
-    useEffect(() => {
-      // Get the current date
-      const currentDate = new Date();
-  
-      // Add 24 hours to the current date
-      // const futureDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-  
-      // // Format the future date in the required format (YYYY-MM-DD)
-      // const formattedDate = futureDate.toISOString().split('T')[0];
-
-      // Get the current date
-
-
-// Get the date one month before today
-var oneMonthBefore = new Date(currentDate);
-oneMonthBefore.setMonth(currentDate.getMonth() - 1);
-
-// Set the day to 0 to get the last day of the previous month
-oneMonthBefore.setDate(0);
-
-// Format the date as "YYYY-MM-DD"
-var formattedDate = oneMonthBefore.toISOString().slice(0, 10);
-
-console.log(formattedDate); // Example output: "2023-06-30"
-
-  
-      // Construct the API URL with the future date
-      // const url = `https://newsapi.org/v2/everything?q=sports+${showGame}+&from=${formattedDate}&language=en&sortBy=publishedAt&apiKey=c52ee09edeee4a23aabf000dbafbd599`;
-       const url= `https://api.worldnewsapi.com/search-news?api-key=93fa3cc5bf914aa283b09366a7ee0375&text=${showGame}&earliest-publish-date=${formattedDate}&language=eng&sort=publish-time`
-      // Make the HTTP request
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          // Process the response (e.g., log the articles)
-          // console.log(data.articles, "dataa fetch news");
-          console.log(formattedDate, "formatted date");
-          const articles = data.news;
-          SetNews(articles);
-          console.log(articles, "articleskjhkjh")
-          articles.forEach(article => {
-            console.log(article.title);
-          });
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }, [showGame]);
-  
-   
-  
-  
- 
-  
-
-
-
-
-
-
-
-
-
-
+  if (selectedNews) {
+    return (
+      <View style={{flex: 1}}>
+        <View style={styles.header}>
+          <TouchableOpacity>
+            <ArrowBackIcon
+              onPress={() => setSelectedNews(null)}
+              color="white"
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Trending News</Text>
+        </View>
+        <WebView source={{uri: selectedNews.url}} />
+      </View>
+    );
+  }
 
   return (
     <>
       <LoadingModal show={showLoadingModal} />
-      <View style={{ height: 150, paddingTop: 50, backgroundColor: '#181829' }} >
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          style={{ backgroundColor: '#181829', height: 10, marginLeft: 20 }}
-          horizontal={true}
-        >
-          {
-            (showGame == 'Cricket') ?
-              <LinearGradient style={styles.RoundButtonName} colors={['#ED6B4E', '#F4A58A']} start={{ x: 0.4, y: 1.9 }} end={{ x: 0.15, y: 0.0 }}>
-                <Cricket />
-                <Text style={{ fontWeight: 'bold', color: 'white' }}>Cricket</Text>
-              </LinearGradient>
-              :
-              <TouchableOpacity style={styles.RoundButton} onPress={() => setShowScreen('Cricket')}>
-                <Cricket />
-              </TouchableOpacity>
-          }
-          {
-            (showGame == 'Basketball') ?
-              <LinearGradient style={styles.RoundButtonName} colors={['#F4A58A', '#ED6B4E']} start={{ x: 0.35, y: 0.35 }} end={{ x: 0.8, y: 1.0 }}>
-                <Basketball />
-                <Text style={{ fontWeight: 'bold', color: 'white' }}>Basketball</Text>
-              </LinearGradient>
-              :
-              <TouchableOpacity style={styles.RoundButton} onPress={() => setShowScreen('Basketball')}>
-                <Basketball />
-              </TouchableOpacity>
-          }
-          {
-            showGame == 'Football' ?
-              <LinearGradient style={styles.RoundButtonName} colors={['#F4A58A', '#ED6B4E']} start={{ x: 0.35, y: 0.35 }} end={{ x: 0.8, y: 1.0 }}>
-                <Football />
-                <Text style={{ fontWeight: 'bold', color: 'white' }}>Football</Text>
-              </LinearGradient>
-              :
-              <TouchableOpacity style={styles.RoundButton} onPress={() => setShowScreen('Football')}>
-                <Football />
-              </TouchableOpacity>
-          }
-          {
-            showGame == 'Baseball' ?
-              <LinearGradient style={styles.RoundButtonName} colors={['#F4A58A', '#ED6B4E']} start={{ x: 0.35, y: 0.35 }} end={{ x: 0.8, y: 1.0 }}>
-                <BaseBall />
-                <Text style={{ fontWeight: 'bold', color: 'white', marginLeft: 7 }}>Baseball</Text>
-              </LinearGradient>
-              :
-              <TouchableOpacity style={styles.RoundButton} onPress={() => setShowScreen('Baseball')}>
-                <BaseBall />
-              </TouchableOpacity>
-          }
-          {
-            showGame == 'Tennis' ?
-              <LinearGradient style={styles.RoundButtonName} colors={['#F4A58A', '#ED6B4E']} start={{ x: 0.35, y: 0.35 }} end={{ x: 0.8, y: 1.0 }}>
-                <Tennis />
-                <Text style={{ fontWeight: 'bold', color: 'white' }}>Tennis</Text>
-              </LinearGradient>
-              :
-              <TouchableOpacity style={styles.RoundButton} onPress={() => setShowScreen('Tennis')}>
-                <Tennis />
-              </TouchableOpacity>
-          }
-          {
-            showGame == 'Volleyball' ?
-              <LinearGradient style={styles.RoundButtonName} colors={['#F4A58A', '#ED6B4E']} start={{ x: 0.35, y: 0.35 }} end={{ x: 0.8, y: 1.0 }}>
-                <VollyBall />
-                <Text style={{ fontWeight: 'bold', color: 'white' }}>Volleyball</Text>
-              </LinearGradient>
-              :
-              <TouchableOpacity style={styles.RoundButton} onPress={() => setShowScreen('Volleyball')}>
-                <VollyBall />
-              </TouchableOpacity>
-          }
-          {
-            showGame == 'Ice Hockey' ?
-              <LinearGradient style={styles.RoundButtonName} colors={['#F4A58A', '#ED6B4E']} start={{ x: 0.35, y: 0.35 }} end={{ x: 0.8, y: 1.0 }}>
-                <IceHockey />
-                <Text style={{ fontWeight: 'bold', color: 'white' }}>Ice Hockey</Text>
-              </LinearGradient>
-              :
-              <TouchableOpacity style={styles.RoundButton} onPress={() => setShowScreen('Ice Hockey')}>
-                <IceHockey />
-              </TouchableOpacity>
-          }
-          {
-            showGame == 'Handball' ?
-              <LinearGradient style={styles.RoundButtonName} colors={['#F4A58A', '#ED6B4E']} start={{ x: 0.35, y: 0.35 }} end={{ x: 0.8, y: 1.0 }}>
-                <Handball />
-                <Text style={{ fontWeight: 'bold', color: 'white' }}>Handball</Text>
-              </LinearGradient>
-              :
-              <TouchableOpacity style={styles.RoundButton} onPress={() => setShowScreen('Handball')}>
-                <Handball />
-              </TouchableOpacity>
-          }
-          {
-            showGame == 'Rugby' ?
-              <LinearGradient style={styles.RoundButtonName} colors={['#F4A58A', '#ED6B4E']} start={{ x: 0.35, y: 0.35 }} end={{ x: 0.8, y: 1.0 }}>
-                <Rugby />
-                <Text style={{ fontWeight: 'bold', color: 'white' }}>Rugby</Text>
-              </LinearGradient>
-              :
-              <TouchableOpacity style={styles.RoundButton} onPress={() => setShowScreen('Rugby')}>
-                <Rugby />
-              </TouchableOpacity>
-          }
-
-        </ScrollView>
-      </View>
-
       <ScrollView
-        style={{ backgroundColor: '#181829', paddingLeft: 20, paddingRight: 20 }}
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        // refreshControl={
-        //   <RefreshControl refreshing={refreshing} onRefresh={() => { getMatchesFromDatabase(showGame); }} />
-        // }
-        >
-        {
-          news?.map((fnews, index) => (<TrendingNews news={fnews} key={index} />))
-        }
-        {newsList.length < 0 && <Text style={{ fontSize: 20, color: 'white' }}>No news found for {showGame}</Text>}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#ffffff"
+          />
+        }>
+        <Text style={styles.pageTitle}>Trending News</Text>
+        {news.length > 0 ? (
+          news.map((article, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => setSelectedNews(article)}>
+              <View style={styles.newsItem}>
+                <Text style={styles.newsTitle}>{article.title}</Text>
+                {article.urlToImage && (
+                  <View style={styles.imageContainer}>
+                    {imageLoading && (
+                      <ActivityIndicator
+                        size="large"
+                        color="#ffffff"
+                        style={styles.loader}
+                      />
+                    )}
+                    <Image
+                      source={{uri: article.urlToImage}}
+                      style={styles.newsImage}
+                      onLoadEnd={() => setImageLoading(false)}
+                    />
+                  </View>
+                )}
+                <View style={styles.newsDetails}>
+                  <Text style={styles.newsDate}>
+                    {new Date(article.publishedAt).toLocaleDateString()}
+                  </Text>
+                  <Text style={styles.newsSource}>{article.source.name}</Text>
+                </View>
+                <Text style={styles.newsDescription}>
+                  {article.description}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={styles.noNewsText}>No news found.</Text>
+        )}
       </ScrollView>
-      <View style={{ backgroundColor: '#181829', height: 250, paddingTop: 15 }}>
-        <Text style={{ paddingLeft: 20, color: 'white', marginBottom: 10, fontSize: 20 }}>Trending News</Text>
-        <ScrollView
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          // refreshControl={
-          //   <RefreshControl refreshing={refreshing} onRefresh={() => { getTrendingNews(); }} />
-          // }
-          >
-          {
-            news?.map((news, index) => (<TrendingNewsBanner news={news} key={index} />))
-          }
-        </ScrollView>
-
-      </View>
-
     </>
   );
 }
@@ -309,24 +123,81 @@ console.log(formattedDate); // Example output: "2023-06-30"
 export default ExploreScreen;
 
 const styles = StyleSheet.create({
-
-  RoundButtonName: {
-    marginLeft: 20,
-    padding: 12,
-    height: 70,
-    borderRadius: 46,
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  RoundButton: {
-    marginLeft: 20,
-    height: 70,
-    width: 70,
-    borderRadius: 36,
+    padding: 10,
     backgroundColor: '#222232',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    marginLeft: 10,
+    flex: 1,
+  },
+  scrollView: {
+    backgroundColor: '#181829',
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'white',
+    marginVertical: 20,
+    textAlign: 'left',
+  },
+  newsItem: {
+    backgroundColor: '#222232',
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 10,
+  },
+  newsTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  imageContainer: {
+    position: 'relative',
+  },
+  loader: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{translateX: -12}, {translateY: -12}],
+  },
+  newsImage: {
+    height: 200,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  newsDetails: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  newsDate: {
+    fontSize: 14,
+    color: 'grey',
+  },
+  newsSource: {
+    fontSize: 14,
+    color: 'grey',
+  },
+  newsDescription: {
+    fontSize: 16,
+    color: 'white',
+    marginTop: 10,
+  },
+  newsContent: {
+    fontSize: 14,
+    color: 'white',
+    marginTop: 10,
+  },
+  noNewsText: {
+    fontSize: 20,
+    color: 'white',
+  },
 });

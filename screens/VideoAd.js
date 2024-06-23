@@ -34,81 +34,218 @@ const handlePause = () => {
 };
 
 
-    return(
+    return (
       <ScrollView>
-        <View style={{flex: 1,paddingBottom:20,backgroundColor:'#181829',}}>
-  
-  {/* <Text>hello </Text> */}
-  <View style={{flexDirection: 'row',marginLeft:28,marginRight:28,}}>
-                <ArrowLeft style={{marginTop:30}} onPress={()=>props.navigation.navigate("Home")}/>
-               
-               
-               <View style={{flexDirection: 'row', alignItems: 'center',  }}>
-                <Text style={{textAlign:'center', color:'#ffff',marginTop:30, fontSize:20, fontFamily:'SourceSansPro', marginLeft:"25%"}}> How to place a bet </Text>
-                {/* <Pressable onPress={() => props.navigation.navigate('VideoAd')}>
+        <View style={{flex: 1, paddingBottom: 20, backgroundColor: '#181829'}}>
+          {/* <Text>hello </Text> */}
+          <View style={{flexDirection: 'row', marginLeft: 28, marginRight: 28}}>
+            <ArrowLeft
+              style={{marginTop: 30}}
+              onPress={() => props.navigation.navigate('Home')}
+            />
+
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: '#ffff',
+                  marginTop: 30,
+                  fontSize: 20,
+                  fontFamily: 'SourceSansPro',
+                  marginLeft: '25%',
+                }}>
+                {' '}
+                How to place a bet{' '}
+              </Text>
+              {/* <Pressable onPress={() => props.navigation.navigate('VideoAd')}>
                   <Text style={{ color: '#ffff', fontSize: 23, marginLeft: 10, marginTop:30, marginLeft:"37%"}}>ⓘ</Text>
                  </Pressable> */}
-               </View>
-     </View>
-     
-     <View style={styles.container}>
-     <YouTubeIframe
-        ref={youtubePlayerRef}
-        videoId={videoId}
-        webViewStyle={styles.webView}
-        
-        volume={100}
-        height={270} // Adjust the height as needed
-      />
-    </View>
-        <View style={{marginRight:10, marginLeft:10, marginBottom:10, marginTop:-20}}>
-      <Text style={{color:'white', fontSize:14, fontFamily:'SourceSansPro', }}>Please note that betX is not a bookmaker and does not accept bets on sports events. Instead, our platform empowers you to make informed decisions for your bets.</Text>
-      <Text style={{color:'white', fontSize:14, fontFamily:'SourceSansPro',  marginTop:8}}>To get started with betting on our predictions, follow these simple steps: </Text> 
-     
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start' ,  margin:5}}>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>1. </Text>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>
-  Sign up for an account with any bookmaker of your choice. Once registered, proceed to add a payment method to fund your betting account.
-  </Text>
-      </View>
+            </View>
+          </View>
 
+          <View style={styles.container}>
+            <YouTubeIframe
+              ref={youtubePlayerRef}
+              videoId={videoId}
+              webViewStyle={styles.webView}
+              volume={100}
+              height={270} // Adjust the height as needed
+            />
+          </View>
+          <View
+            style={{
+              marginRight: 10,
+              marginLeft: 10,
+              marginBottom: 10,
+              marginTop: -20,
+            }}>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 14,
+                fontFamily: 'SourceSansPro',
+              }}>
+              Please note that betX is not a bookmaker and does not accept bets
+              on sports events. Instead, our platform empowers you to make
+              informed decisions for your bets.
+            </Text>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 14,
+                fontFamily: 'SourceSansPro',
+                marginTop: 8,
+              }}>
+              To get started with betting on our predictions, follow these
+              simple steps:{' '}
+            </Text>
 
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start',  margin:5 }}>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>2. </Text>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>
-  On the bookmaker's website, search for the event mentioned in our prediction. Each prediction includes the names of the teams, the sport, and the league to help you find the right event easily.
-  </Text>
-      </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                margin: 5,
+              }}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                1.{' '}
+              </Text>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                Sign up for an account with any bookmaker of your choice. Once
+                registered, proceed to add a payment method to fund your betting
+                account.
+              </Text>
+            </View>
 
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                margin: 5,
+              }}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                2.{' '}
+              </Text>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                On the bookmaker's website, search for the event mentioned in
+                our prediction. Each prediction includes the names of the teams,
+                the sport, and the league to help you find the right event
+                easily.
+              </Text>
+            </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start',  margin:5 }}>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>3. </Text>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>
-  Place your bet on the chosen event. You have the freedom to decide the bet amount according to your preferences. However, we strongly recommend betting responsibly and not wagering your entire bank amount at once.
-  </Text>
-      </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                margin: 5,
+              }}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                3.{' '}
+              </Text>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                Place your bet on the chosen event. You have the freedom to
+                decide the bet amount according to your preferences. However, we
+                strongly recommend betting responsibly and not wagering your
+                entire bank amount at once.
+              </Text>
+            </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start',  margin:5 }}>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>4. </Text>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>
-  If your bet is successful, you have the option to withdraw your winnings to your payment card or keep them in your betting account for future bets. Please be aware that bookmakers may have rules and limitations regarding deposits and withdrawals.
-  </Text>
-      </View> 
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start',  margin:5 }}>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>5. </Text>
-  <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>
-  Remember, sports prediction and betting should be an enjoyable experience, and betX is here to provide informed insights to enhance your betting strategy. Always gamble responsibly and make informed decisions.
-  </Text>
-      </View> 
-      <Text style={{ color: 'white', fontSize: 13, fontFamily: 'SourceSansPro' }}>At betX, we value responsible gambling and want our users to enjoy their betting experience. Should you have any questions or need assistance, feel free to reach out to us at support@betxapp.in</Text>
-     
-
-      
-      </View> 
-
-  </View>
-  </ScrollView>
-    )
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                margin: 5,
+              }}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                4.{' '}
+              </Text>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                If your bet is successful, you have the option to withdraw your
+                winnings to your payment card or keep them in your betting
+                account for future bets. Please be aware that bookmakers may
+                have rules and limitations regarding deposits and withdrawals.
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                margin: 5,
+              }}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                5.{' '}
+              </Text>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 13,
+                  fontFamily: 'SourceSansPro',
+                }}>
+                Remember, sports prediction and betting should be an enjoyable
+                experience, and betX is here to provide informed insights to
+                enhance your betting strategy. Always gamble responsibly and
+                make informed decisions.
+              </Text>
+            </View>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 13,
+                fontFamily: 'SourceSansPro',
+              }}>
+              At betX, we value responsible gambling and want our users to enjoy
+              their betting experience. Should you have any questions or need
+              assistance, feel free to reach out to us at betxperfect@gmail.com
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+    );
 };
 
 const styles = StyleSheet.create({
