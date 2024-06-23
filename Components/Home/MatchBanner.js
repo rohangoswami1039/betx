@@ -218,7 +218,7 @@ function MatchBanner(props) {
         onPress={() => {
           accessPrediction(props.match);
         }}
-        style={{marginTop: 32}}>
+        style={{marginTop: 32, marginLeft: 5, marginRight: 5}}>
         {props.match.betType == 'Premium' ||
         props.match.betType == 'Free-High' ? (
           <View
