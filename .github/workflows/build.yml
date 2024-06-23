@@ -61,12 +61,6 @@ jobs:
           name: app-release-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
 
-      - name: Store Build Metadata
-        run: |
-          cd android
-          echo "VERSION_CODE=$(./gradlew -q printVersionCode)" >> $GITHUB_ENV
-          echo "VERSION_NAME=$(./gradlew -q printVersionName)" >> $GITHUB_ENV
-
       - name: Fetch Commit Authors
         id: get-authors
         run: |
