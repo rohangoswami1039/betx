@@ -60,35 +60,3 @@ jobs:
         with:
           name: app-release-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
-
-      - name: Fetch Commit Authors
-        id: get-authors
-        run: |
-          authors=$(git log --pretty=format:"%an <%ae>" | sort | uniq)
-          echo "AUTHORS=$authors" >> $GITHUB_ENV
-
-      - name: Notify Build Success
-        if: success()
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const authors = process.env.AUTHORS.split('\n').map(a => `@${a.split(' ')[0]}`).join(' ');
-            github.issues.createComment({
-              issue_number: github.context.issue.number,
-              owner: github.context.repo.owner,
-              repo: github.context.repo.repo,
-              body: `:white_check_mark: Build succeeded!\n- APK: ${GITHUB_RUN_URL}/artifact/app-release-apk\n- AAB: ${GITHUB_RUN_URL}/artifact/app-release-aab\n\n${authors}`
-            })
-
-      - name: Notify Build Failure
-        if: failure()
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const authors = process.env.AUTHORS.split('\n').map(a => `@${a.split(' ')[0]}`).join(' ');
-            github.issues.createComment({
-              issue_number: github.context.issue.number,
-              owner: github.context.repo.owner,
-              repo: github.context.repo.repo,
-              body: `:x: Build failed. Please check the logs.\n\n${authors}`
-            })
