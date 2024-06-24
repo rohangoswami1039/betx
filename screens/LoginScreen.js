@@ -1,29 +1,47 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ActivityIndicator,
+  ToastAndroid,
+} from 'react-native';
 import GmailSignIn from './GmailSignIn';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore from '@react-native-firebase/firestore'; // Ensure you import firestore
 import {Actionsheet} from 'native-base';
 
 export default function LoginScreen(props) {
+  const [user, setUser] = useState();
+  const [loading, setLoading] = useState(true); // Add loading state
+  const mountedRef = useRef(false);
+
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged(user => {
-      if (user) {
-        console.log(user);
-        setUser(user);
-        saveUser();
-        //navigation.navigate('MainHome');
+    const checkUserData = async () => {
+      const userData = await AsyncStorage.getItem('userData');
+      if (userData) {
+        setUser(JSON.parse(userData));
         props.navigation.navigate('MainHome');
       } else {
-        console.log('Not logged in');
-        props.navigation.navigate('Login');
+        const unsubscribe = auth().onAuthStateChanged(async user => {
+          if (user) {
+            console.log('User data if user in firebase', userData);
+            saveUser(user); // Pass user to saveUser function
+            setUser(user);
+            setLoading(false);
+            props.navigation.navigate('MainHome');
+          } else {
+            console.log('Not logged in');
+            setLoading(false); // Set loading to false if not logged in
+          }
+        });
+        return unsubscribe;
       }
-    });
-    return unsubscribe;
+    };
+    checkUserData();
   }, []);
-
-  const [user, setUser] = useState();
-  const mountedRef = useRef(false);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -32,7 +50,7 @@ export default function LoginScreen(props) {
     };
   }, []);
 
-  async function saveUser() {
+  async function saveUser(user) {
     console.log('save user called');
     if (user) {
       const userData = JSON.stringify(user);
@@ -53,6 +71,8 @@ export default function LoginScreen(props) {
               })
               .then(() => {
                 console.log('User updated!');
+                setLoading(false); // Set loading to false after updating user
+                props.navigation.navigate('MainHome');
               });
           } else {
             if (documentSnapshot.data().deactive) {
@@ -64,14 +84,24 @@ export default function LoginScreen(props) {
                 25,
                 50,
               );
+              setLoading(false); // Set loading to false if account is disabled
             } else {
               if (!documentSnapshot.data().interest) {
-                props.navigation.navigate('InterestScreen');
+                props.navigation.navigate('MainHome');
               }
+              setLoading(false); // Set loading to false if user exists
             }
           }
         });
     }
+  }
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.horizontal]}>
+        <ActivityIndicator size="large" color="#00ff00" />
+      </View>
+    );
   }
 
   return (
@@ -108,6 +138,15 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 2,
     color: '#0E0F0F',
-    backgroundColor: '#F5FCFF', 
+    backgroundColor: '#F5FCFF',
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  horizontal: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
   },
 });
