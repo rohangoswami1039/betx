@@ -17,17 +17,12 @@ function MatchBanner(props) {
   const [alertTitle, setAlertTitle] = useState('');
   const [alertDescription, setAlertDescription] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
-
   const [unlockTime, setUnlockTime] = useState();
-
   const navigation = useNavigation();
 
   async function accessPrediction(match) {
-    // console.log("match data "+match.predictionImage)
     calculateUnlockTime(props.match.betDate);
-
     if (match.betType == 'Premium') {
-      //Check from firebase account
       firestore()
         .collection('Payment')
         .doc(auth().currentUser.uid)
@@ -35,18 +30,14 @@ function MatchBanner(props) {
         .doc(match.key)
         .get()
         .then(documentSnapshot => {
-          //console.log('document  exists: ', documentSnapshot.exists);
-
           if (documentSnapshot.exists) {
             if (documentSnapshot.data().status_code == 200) {
-              // navigation.navigate("BetImageScreen",{match:props.match});
               navigation.navigate('BetImageScreen', {
                 match: props.match,
                 voting: match.vote,
                 winvote: match.votecount,
               });
             } else {
-              // alert('Invalid Payment details')
               setAlertDescription(
                 `Transaction declined: invalid payment method.`,
               );
@@ -54,24 +45,18 @@ function MatchBanner(props) {
               setAlertVisible(true);
             }
           } else if (match.matchDate.toDate() < new Date()) {
-            //if Match is over
             navigation.navigate('BetImageScreen', {
               match: props.match,
               voting: match.vote,
               winvote: match.votecount,
             });
           } else {
-            //Check if Usernamer is Available or not
             firestore()
               .collection('Users')
               .doc(auth().currentUser.uid)
               .onSnapshot(documentSnapshot => {
                 if (documentSnapshot.exists) {
-                  //If name not available then redirect to add username
                   if (!documentSnapshot.data().email) {
-                    // console.log("navigate to profile s");
-                    //  alert('Redirecting to profile');
-
                     ToastAndroid.showWithGravityAndOffset(
                       'Your profile is incomplete please update your profile',
                       ToastAndroid.LONG,
@@ -84,67 +69,7 @@ function MatchBanner(props) {
                   }
                   //If name is available do payment
                   else {
-                    /*
-                        // Add payment if not already done
-                        //////razorpay////////////////////////////////
-                        var options = {
-                          description: 'Credits towards consultation',
-                          image: 'https://betxapp.in/img/bet-light-logo.svg',
-                          currency: 'INR',
-                          key: 'rzp_test_tWWOF5qzrsxmCB',
-                          amount: '100',
-                          name: 'BetX',
-                          prefill: {
-                            email: 'test@test.com',
-                            contact: auth().currentUser.phoneNumber,
-                            name: auth().currentUser.uid
-                          },
-                          theme: {color: '#F37254'}
-                        }
-                        RazorpayCheckout.open(options).then((data) => {
-                          // handle success
-                          console.log(`Success payment details : ${JSON.stringify(data)}`);
-                          firestore()
-                          .collection('Payment')
-                          .doc(auth().currentUser.uid)
-                          .collection("PaymentHistory")
-                          .doc(match.key)
-                          .set({
-                            ...data ,
-                            "paymentDate": new Date(),
-                            "matchID":match.key
-                          }).then(()=>{
-                            // alert('Payment successful')
-                            // setAlertTitle(`Your payment has been processed!`);
-                            // setAlertDescription(`You have successfully done payment for match title : ${match.title}`);
-                            // setAlertVisible(true)
-                            //Notification save to firebase
-                            firestore()
-                            .collection('Notifications')
-                            .doc(auth().currentUser.uid)
-                            .collection('NotificationHistory')
-                            .add({
-                              'dateTime': new Date(),
-                              'matchID':match.key,
-                              'read':false,
-                              'message':'You have purchased prediction for '+match.matchTitle
-                            }).then(() => {
-                              // console.log('Notification Added Success');
-                            });
-                            navigation.navigate("BetImageScreen",{match:props.match});
-                          })
-                        }).catch((error) => {
-                          // handle failure
-                          //alert(`Error: ${error.code} | ${error.description}`);
-                          // alert("Payment process failed")
-                          
-                          
-                          setAlertDescription(`You have canceled or error while processing`);
-                          setAlertTitle(`Payment process failed`);
-                          setAlertVisible(true)
-                        });
-                        //////razorpay////////////////////////////////
-                          */
+                    console.log('navigate to payment');
                   }
                 }
               });
@@ -176,25 +101,15 @@ function MatchBanner(props) {
   async function calculateUnlockTime(date) {
     if (date) {
       console.log('date' + date.toDate());
-      //props.match.betDate ? moment.duration(moment(moment(props.match.betDate.toDate())).diff(new Date())).asHours() : ''
       var duration = await moment.duration(
         moment(moment(props.match.betDate.toDate())).diff(new Date()),
       );
-      // console.log("duration  hour "+parseInt(duration.asHours()))
-      // console.log("duration  minuts "+parseInt(duration.asMinutes())  % 60)
       if (parseInt(duration.asMinutes()) % 60 < 0) {
-        //setMatchStarted(true);
-
-        // return"Started";
-        // setUnlockTime('Started');
         setUnlockTime(duration.asMinutes());
       } else {
-        // return parseInt(duration.asHours())+':'+parseInt(duration.asMinutes())  % 60+' hr';
-        // setUnlockTime(parseInt(duration.asHours())+':'+parseInt(duration.asMinutes())  % 60+' hr');
         setUnlockTime(duration.asMinutes());
       }
     } else {
-      // return"";
       setUnlockTime('');
     }
   }
@@ -202,7 +117,6 @@ function MatchBanner(props) {
   useEffect(() => {
     {
       calculateUnlockTime(props.match.betDate);
-      // console.log('calling update')
     }
   }, []);
 
@@ -218,7 +132,7 @@ function MatchBanner(props) {
         onPress={() => {
           accessPrediction(props.match);
         }}
-        style={{marginTop: 32, marginLeft: 5, marginRight: 5}}>
+        style={{marginTop: 32, marginLeft: 10, marginRight: 10}}>
         {props.match.betType == 'Premium' ||
         props.match.betType == 'Free-High' ? (
           <View
@@ -341,15 +255,7 @@ function MatchBanner(props) {
                   </View>
                   {props.match.betType != 'Premium' &&
                   props.match.matchDate.toDate() > new Date() ? (
-                    <View>
-                      {/* <Text style={{fontSize:7,color:'white',marginLeft:5,position: 'absolute',bottom: 0,}}>
-                              {
-                                unlockTime < 0 
-                                ? 'Unlock In : Started'
-                                :`Unlock In : ${Math.floor(unlockTime / 60)+':'+parseInt(unlockTime)  % 60+' hr'}`
-                              }
-                            </Text> */}
-                    </View>
+                    <View></View>
                   ) : null}
                 </View>
               </View>

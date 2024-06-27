@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,6 +12,7 @@ import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore'; // Ensure you import firestore
 import {Actionsheet} from 'native-base';
+import {useFocusEffect} from '@react-navigation/native';
 
 export default function LoginScreen(props) {
   const [user, setUser] = useState();
@@ -49,6 +50,34 @@ export default function LoginScreen(props) {
       mountedRef.current = false;
     };
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      const checkUserData = async () => {
+        const userData = await AsyncStorage.getItem('userData');
+        if (userData) {
+          setUser(JSON.parse(userData));
+          props.navigation.navigate('MainHome');
+        } else {
+          const unsubscribe = auth().onAuthStateChanged(async user => {
+            if (user) {
+              console.log('User data if user in firebase', userData);
+              saveUser(user); // Pass user to saveUser function
+              setUser(user);
+              setLoading(false);
+              props.navigation.navigate('MainHome');
+            } else {
+              console.log('Not logged in');
+              setLoading(false); // Set loading to false if not logged in
+            }
+          });
+          return unsubscribe;
+        }
+      };
+      checkUserData();
+    }, [props.navigation]),
+  );
 
   async function saveUser(user) {
     console.log('save user called');
