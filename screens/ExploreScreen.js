@@ -65,7 +65,6 @@ function ExploreScreen(props) {
 
   return (
     <>
-      <LoadingModal show={showLoadingModal} />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -113,7 +112,7 @@ function ExploreScreen(props) {
             </TouchableOpacity>
           ))
         ) : (
-          <Text style={styles.noNewsText}>No news found.</Text>
+          <></>
         )}
       </ScrollView>
     </>
@@ -126,7 +125,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    padding: 25,
     backgroundColor: '#222232',
   },
   headerTitle: {
