@@ -65,6 +65,9 @@ function ExploreScreen(props) {
 
   return (
     <>
+      <View style={{backgroundColor: '#181829'}}>
+        <Text style={styles.pageTitle}>Trending News</Text>
+      </View>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -75,7 +78,6 @@ function ExploreScreen(props) {
             tintColor="#ffffff"
           />
         }>
-        <Text style={styles.pageTitle}>Trending News</Text>
         {news.length > 0 ? (
           news.map((article, index) => (
             <TouchableOpacity
@@ -112,7 +114,12 @@ function ExploreScreen(props) {
             </TouchableOpacity>
           ))
         ) : (
-          <></>
+          <View
+            style={{ justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>
+              Loding....
+            </Text>
+          </View>
         )}
       </ScrollView>
     </>
@@ -141,10 +148,11 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   pageTitle: {
+    margin: 20,
     fontSize: 28,
     fontWeight: 'bold',
     color: 'white',
-    marginVertical: 20,
+    backgroundColor: '#181829',
     textAlign: 'left',
   },
   newsItem: {

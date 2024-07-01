@@ -111,7 +111,7 @@ function HomeScreen(props) {
 
   useEffect(() => {
     const set_Handle_IPL = () => {
-      if (IPL && false) {
+      if (IPL) {
         return set_routes([
           {key: 'first', title: 'Prediction'},
           {key: 'second', title: 'IPL Sessions'},
@@ -153,14 +153,6 @@ function HomeScreen(props) {
     console.log(refercode);
   };
 
-  const renderItem = ({item}) => {
-    const progress = Number(item.vote);
-    return (
-      <View>
-        <MatchBanner match={item} />
-      </View>
-    );
-  };
   return (
     <>
       <View style={{flex: 1, backgroundColor: '#181829'}}>
@@ -171,42 +163,22 @@ function HomeScreen(props) {
               justifyContent: 'space-between',
               padding: 10,
             }}>
-            <BetexLogo style={{margin: 10, width: 40, height: 50}} />
+            <BetexLogo style={{margin: 20, width: 50, height: 50}} />
           </View>
 
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          <View style={{paddingHorizontal: 20}}>
             <Corosel />
           </View>
 
-          {/*  <TabView
-            navigationState={{index, routes}}
-            renderScene={renderScene}
-            renderTabBar={renderTabBar}
-            onIndexChange={setIndex}
-            initialLayout={{width: layout.width}}
-            style={{marginBottom: 70}}
-          /> */}
-          <View
-            style={{
-              backgroundColor: '#181829',
-              paddingLeft: 30,
-              paddingRight: 25,
-              flex: 1,
-              flexGrow: 1,
-            }}>
-            {matchlist.length > 0 ? (
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{paddingBottom: 20}}
-                data={matchlist}
-                renderItem={renderItem}
-                onRefresh={() => getMatches()}
-                refreshing={loading}
-              />
-            ) : (
+          <FlatList
+            style={{flex: 1}}
+            data={matchlist}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item}) => <MatchBanner match={item} />}
+            ListEmptyComponent={() => (
               <Text
                 style={{
-                  color: 'white',
+                  color: 'red',
                   fontSize: 20,
                   marginTop: 30,
                   textAlign: 'center',
@@ -214,7 +186,8 @@ function HomeScreen(props) {
                 No Prediction Available
               </Text>
             )}
-          </View>
+            contentContainerStyle={{flexGrow: 1}}
+          />
         </View>
       </View>
     </>

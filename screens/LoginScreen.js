@@ -19,28 +19,29 @@ export default function LoginScreen(props) {
   const [loading, setLoading] = useState(true); // Add loading state
   const mountedRef = useRef(false);
 
+  const checkUserData = async () => {
+    const userData = await AsyncStorage.getItem('userData');
+    if (userData) {
+      setUser(JSON.parse(userData));
+      props.navigation.navigate('MainHome');
+    } else {
+      const unsubscribe = auth().onAuthStateChanged(async user => {
+        if (user) {
+          console.log('User data if user in firebase', user);
+          saveUser(user); // Pass user to saveUser function
+          setUser(user);
+          setLoading(false);
+          props.navigation.navigate('MainHome');
+        } else {
+          console.log('Not logged in');
+          setLoading(false); // Set loading to false if not logged in
+        }
+      });
+      return unsubscribe;
+    }
+  };
+
   useEffect(() => {
-    const checkUserData = async () => {
-      const userData = await AsyncStorage.getItem('userData');
-      if (userData) {
-        setUser(JSON.parse(userData));
-        props.navigation.navigate('MainHome');
-      } else {
-        const unsubscribe = auth().onAuthStateChanged(async user => {
-          if (user) {
-            console.log('User data if user in firebase', userData);
-            saveUser(user); // Pass user to saveUser function
-            setUser(user);
-            setLoading(false);
-            props.navigation.navigate('MainHome');
-          } else {
-            console.log('Not logged in');
-            setLoading(false); // Set loading to false if not logged in
-          }
-        });
-        return unsubscribe;
-      }
-    };
     checkUserData();
   }, []);
 
@@ -54,27 +55,6 @@ export default function LoginScreen(props) {
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      const checkUserData = async () => {
-        const userData = await AsyncStorage.getItem('userData');
-        if (userData) {
-          setUser(JSON.parse(userData));
-          props.navigation.navigate('MainHome');
-        } else {
-          const unsubscribe = auth().onAuthStateChanged(async user => {
-            if (user) {
-              console.log('User data if user in firebase', userData);
-              saveUser(user); // Pass user to saveUser function
-              setUser(user);
-              setLoading(false);
-              props.navigation.navigate('MainHome');
-            } else {
-              console.log('Not logged in');
-              setLoading(false); // Set loading to false if not logged in
-            }
-          });
-          return unsubscribe;
-        }
-      };
       checkUserData();
     }, [props.navigation]),
   );
