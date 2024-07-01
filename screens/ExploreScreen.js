@@ -117,7 +117,7 @@ function ExploreScreen(props) {
           <View
             style={{ justifyContent: 'center', alignItems: 'center'}}>
             <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>
-              Loding....
+              Loading....
             </Text>
           </View>
         )}
