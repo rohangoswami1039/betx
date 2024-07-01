@@ -163,15 +163,17 @@ function HomeScreen(props) {
               justifyContent: 'space-between',
               padding: 10,
             }}>
-            <BetexLogo style={{margin: 20, width: 50, height: 50}} />
+            <BetexLogo
+              style={{marginLeft: 15, marginTop: 15, width: 50, height: 50}}
+            />
           </View>
 
-          <View style={{paddingHorizontal: 20}}>
+          <View style={{marginBottom: 30}}>
             <Corosel />
           </View>
 
           <FlatList
-            style={{flex: 1}}
+            style={{flex: 1, marginLeft: 10, marginRight: 10}}
             data={matchlist}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item}) => <MatchBanner match={item} />}
