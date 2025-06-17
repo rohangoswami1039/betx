@@ -155,7 +155,7 @@ function HomeScreen(props) {
 
   return (
     <>
-      <View style={{flex: 1, backgroundColor: '#181829'}}>
+      <View style={{flex: 1, backgroundColor: '#161616'}}>
         <View style={{flex: 1}}>
           <View
             style={{

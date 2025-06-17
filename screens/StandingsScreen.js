@@ -115,22 +115,27 @@ function StandingsScreen(props) {
         style={{
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: '#181829',
+          backgroundColor: '#161616',
           paddingTop: 20,
           paddingBottom: 20,
         }}>
-        <LinearGradient
-          alignSelf="center"
-          style={styles.colorButton}
-          colors={['#ED6B4E', '#F4A58A']}
-          start={{x: 0.4, y: 1.5}}
-          end={{x: 0.15, y: 0.0}}>
-          <Text style={styles.signOutButton}>Completed Matches</Text>
-        </LinearGradient>
+        <Text
+          style={{
+            borderRadius: 16,
+            fontSize: 20,
+            width: 200,
+            height: 56,
+            color: 'white',
+            textAlignVertical: 'center',
+            textAlign: 'center',
+            backgroundColor: '#1e1e1e',
+          }}>
+          Completed Matches
+        </Text>
       </View>
       <View
         style={{
-          backgroundColor: '#181829',
+          backgroundColor: '#161616',
           paddingLeft: 30,
           paddingRight: 25,
           flex: 1,
@@ -175,15 +180,6 @@ function StandingsScreen(props) {
 export default StandingsScreen;
 
 const styles = StyleSheet.create({
-  signOutButton: {
-    fontSize: 20,
-    width: 200,
-    height: 56,
-    color: 'white',
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    // backgroundColor:'#DC4444'
-  },
   colorButton: {
     borderRadius: 50,
   },

@@ -143,7 +143,7 @@ function MatchBanner(props) {
               marginTop: -20,
             }}>
             <View
-              style={{backgroundColor: '#2B2B3D', flexDirection: 'row'}}
+              style={{backgroundColor: '#1c1c1c', flexDirection: 'row'}}
               borderTopLeftRadius="8"
               borderTopRightRadius="8">
               <View style={{marginTop: 5, marginLeft: 5}}>
@@ -172,7 +172,7 @@ function MatchBanner(props) {
             console.warn('Clicked on flat list');
           }}>
           <View
-            style={{width: '80%', backgroundColor: '#2B2B3D'}}
+            style={{width: '80%', backgroundColor: '#1E1E1E'}}
             borderLeftRadius="16">
             <View style={{flexDirection: 'row'}}>
               <View
@@ -264,7 +264,7 @@ function MatchBanner(props) {
           <View
             style={{
               width: '20%',
-              backgroundColor: '#222232',
+              backgroundColor: '#5D5C64',
               justifyContent: 'center',
               alignItems: 'center',
             }}

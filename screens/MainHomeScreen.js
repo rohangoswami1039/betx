@@ -15,6 +15,10 @@ import {
   ExploreIcon,
   StandingsIcon,
   ProfileIcon,
+  FilledHome,
+  FilledExplore,
+  FilledStandings,
+  FilledProfile,
 } from '../assets/icons';
 
 const Tab = createBottomTabNavigator();
@@ -56,29 +60,13 @@ export default function App(props) {
           let iconName;
 
           if (route.name === 'Home') {
-            iconName = focused ? (
-              <Text style={styles.HomeButton}>Home{'\n'}.</Text>
-            ) : (
-              <HomeIcon />
-            );
+            iconName = focused ? <FilledHome /> : <HomeIcon />;
           } else if (route.name === 'Explore') {
-            iconName = focused ? (
-              <Text style={styles.HomeButton}>News{'\n'}.</Text>
-            ) : (
-              <ExploreIcon />
-            );
+            iconName = focused ? <FilledExplore /> : <ExploreIcon />;
           } else if (route.name === 'Standings') {
-            iconName = focused ? (
-              <Text style={styles.HomeButton}>Standings{'\n'}.</Text>
-            ) : (
-              <StandingsIcon />
-            );
+            iconName = focused ? <FilledStandings /> : <StandingsIcon />;
           } else if (route.name === 'Profile') {
-            iconName = focused ? (
-              <Text style={styles.HomeButton}>My Profile{'\n'}.</Text>
-            ) : (
-              <ProfileIcon />
-            );
+            iconName = focused ? <FilledProfile /> : <ProfileIcon />;
           }
 
           // You can return any component that you like here!
@@ -90,8 +78,8 @@ export default function App(props) {
         headerShown: false,
         tabBarStyle: {
           width: '100%',
-          height: 85,
-          backgroundColor: '#222232',
+          height: 75,
+          backgroundColor: '#1E1E1E',
           borderTopWidth: 0,
         },
       })}>

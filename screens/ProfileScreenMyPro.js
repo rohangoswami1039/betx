@@ -372,17 +372,24 @@ function ProfileScreenMyPro({props}) {
             </View>
           </View>
         </View>
-
-        <LinearGradient
-          alignSelf="center"
-          style={styles.colorButton}
-          colors={['#DC4444', '#EC9191']}
-          start={{x: 0.4, y: 1.2}}
-          end={{x: 0.15, y: 0.0}}>
-          <Text style={styles.signOutButton} onPress={() => signOut()}>
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          <Text
+            style={{
+              borderRadius: 16,
+              fontSize: 16,
+              borderWidth: 2,
+              borderColor: '#F63D68',
+              width: 150,
+              height: 56,
+              color: 'white',
+              textAlignVertical: 'center',
+              textAlign: 'center',
+              backgroundColor: '#1e1e1e',
+            }}
+            onPress={() => signOut()}>
             Sign Out
           </Text>
-        </LinearGradient>
+        </View>
       </ScrollView>
     </>
   );

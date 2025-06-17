@@ -115,15 +115,15 @@ export default function LoginScreen(props) {
 
   return (
     <>
-      <View style={{flex: 1, backgroundColor: '#181829'}}>
+      <View style={{flex: 1, backgroundColor: '#1c1c1c'}}>
         <Image
           source={require('../assets/images/AppLogoSlogan.png')}
           alt="Alternate Text"
           style={{width: '100%', height: 200, resizeMode: 'contain'}}
         />
-        <Text style={{color: 'white', textAlign: 'center'}}>
+        {/* <Text style={{color: 'white', textAlign: 'center'}}>
           AI Powered Sports Prediction Platform
-        </Text>
+        </Text> */}
       </View>
 
       <Actionsheet isOpen={true} bgColor="transparent">
@@ -139,7 +139,7 @@ export default function LoginScreen(props) {
 
 const styles = StyleSheet.create({
   ActionSheet: {
-    bgColor: '#222232',
+    bgColor: '#161616',
     HeadingColor: '#FFFFFF',
     InputBackgroundColor: '#181829',
   },

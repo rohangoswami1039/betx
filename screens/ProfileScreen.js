@@ -21,7 +21,7 @@ function ProfileScreen(props) {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   return (
     <>
-      <View style={{backgroundColor: '#181829'}}>
+      <View style={{backgroundColor: '#161616'}}>
         <View style={{alignSelf: 'center', marginTop: 40}}>
           <Avatar
             width="150"
@@ -38,8 +38,8 @@ function ProfileScreen(props) {
       </View>
 
       <Tab.Navigator
-        sceneContainerStyle={{backgroundColor: '#181829'}}
-        style={{backgroundColor: '#181829'}}
+        sceneContainerStyle={{backgroundColor: '#161616'}}
+        style={{backgroundColor: '#161616'}}
         screenOptions={({route}) => ({
           tabBarIcon: ({focused}) => {
             let tabLabel;
@@ -47,17 +47,21 @@ function ProfileScreen(props) {
               tabLabel = (
                 <>
                   {focused ? (
-                    <LinearGradient
+                    <Text
                       style={{
-                        padding: 10,
-                        borderRadius: 50,
-                        paddingHorizontal: 20,
-                      }}
-                      colors={['#ED6B4E', '#F4A58A']}
-                      start={{x: 0.4, y: 1.5}}
-                      end={{x: 0.15, y: 0.0}}>
-                      <Text style={{color: 'white'}}> My Profile</Text>
-                    </LinearGradient>
+                        borderRadius: 16,
+                        fontSize: 16,
+                        borderWidth: 2,
+                        borderColor: '#F63D68',
+                        width: 150,
+                        height: 56,
+                        color: 'white',
+                        textAlignVertical: 'center',
+                        textAlign: 'center',
+                        backgroundColor: '#1e1e1e',
+                      }}>
+                      My Profile
+                    </Text>
                   ) : (
                     <Text style={[styles.colorButtonText]}>My Profile</Text>
                   )}
@@ -67,17 +71,21 @@ function ProfileScreen(props) {
               tabLabel = (
                 <>
                   {focused ? (
-                    <LinearGradient
+                    <Text
                       style={{
-                        padding: 10,
-                        borderRadius: 50,
-                        paddingHorizontal: 20,
-                      }}
-                      colors={['#ED6B4E', '#F4A58A']}
-                      start={{x: 0.4, y: 1.5}}
-                      end={{x: 0.15, y: 0.0}}>
-                      <Text style={{color: 'white'}}> Support</Text>
-                    </LinearGradient>
+                        borderRadius: 16,
+                        fontSize: 16,
+                        borderWidth: 2,
+                        borderColor: '#F63D68',
+                        width: 150,
+                        height: 56,
+                        color: 'white',
+                        textAlignVertical: 'center',
+                        textAlign: 'center',
+                        backgroundColor: '#1e1e1e',
+                      }}>
+                      Support
+                    </Text>
                   ) : (
                     <Text style={[styles.colorButtonText]}>Support</Text>
                   )}
