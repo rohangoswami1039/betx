@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Center, Text, Avatar, View, Pressable} from 'native-base';
 
-import {launchImageLibrary} from 'react-native-image-picker';
+//import {launchImageLibrary} from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 
