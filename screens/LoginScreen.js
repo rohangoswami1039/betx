@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,35 +6,42 @@ import {
   Image,
   ActivityIndicator,
   ToastAndroid,
+  Modal,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import GmailSignIn from './GmailSignIn';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import firestore from '@react-native-firebase/firestore'; // Ensure you import firestore
-import {Actionsheet} from 'native-base';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
+import { firestore } from '../firebaseConfig';
+import AppLogoSlogan from '../assets/images/AppLogoSlogan.png'
 
 export default function LoginScreen(props) {
   const [user, setUser] = useState();
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
+  const [showActionSheet, setShowActionSheet] = useState(true);
   const mountedRef = useRef(false);
-
+  
   const checkUserData = async () => {
     const userData = await AsyncStorage.getItem('userData');
     if (userData) {
       setUser(JSON.parse(userData));
       props.navigation.navigate('MainHome');
+      console.log('User Is in this Screen');
     } else {
       const unsubscribe = auth().onAuthStateChanged(async user => {
         if (user) {
           console.log('User data if user in firebase', user);
-          saveUser(user); // Pass user to saveUser function
+          saveUser(user);
           setUser(user);
           setLoading(false);
           props.navigation.navigate('MainHome');
         } else {
           console.log('Not logged in');
-          setLoading(false); // Set loading to false if not logged in
+          setLoading(false);
         }
       });
       return unsubscribe;
@@ -70,17 +77,14 @@ export default function LoginScreen(props) {
         .onSnapshot(documentSnapshot => {
           if (!documentSnapshot.exists) {
             console.log('User not exists');
-            firestore()
-              .collection('Users')
-              .doc(user.uid)
-              .set({
+            firestore().collection('Users').doc(user.uid).set({
                 Name: user.displayName,
                 Email: user.email,
                 PhoneNumber: user.phoneNumber,
               })
               .then(() => {
                 console.log('User updated!');
-                setLoading(false); // Set loading to false after updating user
+                setLoading(false);
                 props.navigation.navigate('MainHome');
               });
           } else {
@@ -93,12 +97,12 @@ export default function LoginScreen(props) {
                 25,
                 50,
               );
-              setLoading(false); // Set loading to false if account is disabled
+              setLoading(false);
             } else {
               if (!documentSnapshot.data().interest) {
                 props.navigation.navigate('MainHome');
               }
-              setLoading(false); // Set loading to false if user exists
+              setLoading(false);
             }
           }
         });
@@ -115,24 +119,34 @@ export default function LoginScreen(props) {
 
   return (
     <>
-      <View style={{flex: 1, backgroundColor: '#1c1c1c'}}>
+      <View style={{ flex: 1, backgroundColor: '#1c1c1c' }}>
         <Image
-          source={require('../assets/images/AppLogoSlogan.png')}
+          source={AppLogoSlogan}
           alt="Alternate Text"
-          style={{width: '100%', height: 200, resizeMode: 'contain'}}
+          style={{ width: '100%', height: 200, resizeMode: 'contain' }}
         />
-        {/* <Text style={{color: 'white', textAlign: 'center'}}>
-          AI Powered Sports Prediction Platform
-        </Text> */}
       </View>
 
-      <Actionsheet isOpen={true} bgColor="transparent">
-        <Actionsheet.Content bg={styles.ActionSheet.bgColor}>
-          <>
-            <GmailSignIn navigation={props.navigation} />
-          </>
-        </Actionsheet.Content>
-      </Actionsheet>
+      {/* Custom ActionSheet as Modal */}
+      <Modal
+        animationType="slide"
+        transparent
+        visible={showActionSheet}
+        onRequestClose={() => setShowActionSheet(false)}>
+        <TouchableWithoutFeedback onPress={() => setShowActionSheet(false)}>
+          <View style={styles.backdrop}>
+            <TouchableWithoutFeedback>
+              <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                style={styles.sheet}>
+                <View style={[styles.sheetContent, { backgroundColor: styles.ActionSheet.bgColor }]}>
+                  <GmailSignIn navigation={props.navigation} />
+                </View>
+              </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </>
   );
 }
@@ -157,5 +171,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 10,
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    width: '100%',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: 'hidden',
+  },
+  sheetContent: {
+    padding: 20,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
 });

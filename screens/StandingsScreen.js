@@ -13,6 +13,7 @@ import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
 import {Corosel, LockButton, MatchBanner} from '../Components';
 import {Button} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function StandingsScreen(props) {
   const [matchlist, setMatchlist] = useState([]);
@@ -108,9 +109,10 @@ function StandingsScreen(props) {
         setLoading(false);
       });
   }
+const insets = useSafeAreaInsets();
 
-  return (
-    <>
+    return (
+      <View style={{flex: 1, backgroundColor: '#161616', paddingTop: insets.top, paddingBottom: insets.bottom}}>
       <View
         style={{
           justifyContent: 'center',
@@ -173,7 +175,7 @@ function StandingsScreen(props) {
           />
         </ScrollView>
       </View>
-    </>
+    </View>
   );
 }
 

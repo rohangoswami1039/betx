@@ -1,102 +1,164 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  Button,
   TouchableOpacity,
   View,
   Text,
   Image,
   StyleSheet,
+  Dimensions,
+  Linking,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {
   GoogleSignin,
-  GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import {firestore} from '../firebaseConfig';
+import CheckBox from '@react-native-community/checkbox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+
+const TERMS_KEY = 'hasAcceptedTerms';
 
 const GmailSignIn = props => {
-  const navigation = useNavigation();
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   useEffect(() => {
     GoogleSignin.configure({
+      offlineAccess: false,
       webClientId:
-        '140917884578-nogto58cnnaaaftnkji607anll746j50.apps.googleusercontent.com',
+        '140917884578-gdgabdsnvua1vlee8uba768kbe3g454o.apps.googleusercontent.com',
+      scopes: ['profile', 'email'],
     });
+
+    // Load saved checkbox state
+    const loadTerms = async () => {
+      const saved = await AsyncStorage.getItem(TERMS_KEY);
+      if (saved === 'true') setAcceptedTerms(true);
+    };
+    loadTerms();
   }, []);
 
   const signIn = async () => {
+    if (isSigningIn) {
+      console.log('Sign-in already in progress, please wait.');
+      return;
+    }
+    if (!acceptedTerms) {
+      console.log('Please accept Terms of Service before signing in.');
+      return;
+    }
+
+    setIsSigningIn(true);
+
     try {
       await GoogleSignin.hasPlayServices();
+      // Sign out any previous session to ensure fresh sign-in
       await GoogleSignin.signOut();
+      const response = await GoogleSignin.signIn();
       const {idToken} = await GoogleSignin.signIn();
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      const userInfo = await auth().signInWithCredential(googleCredential);
-      console.log('user info', userInfo);
-      if (userInfo) {
-        const userRef = firestore()
-          .collection('Users')
-          .doc(auth().currentUser.uid);
-        await userRef
-          .set({
+      const googleCredential = auth.GithubAuthProvider.credential(idToken);
+
+      const userLoginToken = response.data.idToken;
+      if (response && userLoginToken) {
+        const googleCredential = auth.GoogleAuthProvider.credential(
+          userLoginToken,
+        );
+        const userInfo = await auth().signInWithCredential(googleCredential);
+        console.log('In My SignIn Google', userInfo);
+        if (userInfo) {
+          const userRef = firestore()
+            .collection('Users')
+            .doc(auth().currentUser.uid);
+          await userRef.set({
             name: userInfo.user.displayName,
             email: userInfo.user.email,
             photoURL: userInfo.user.photoURL,
             coin: '0',
-          })
-          .then(() => {
-            console.log('User created successfully!');
-          })
-          .catch(e => {
-            console.log(e);
           });
+          console.log('User created successfully!');
+        }
+      } else {
+        console.log('Sign-in was cancelled or no idToken returned');
       }
     } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('SIGN_IN_CANCELLED');
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log('statusCodes.IN_PROGRESS');
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log('PLAY_SERVICES_NOT_AVAILABLE');
+      if (error && error.code) {
+        switch (error.code) {
+          case statusCodes.SIGN_IN_CANCELLED:
+            console.log('SIGN_IN_CANCELLED');
+            break;
+          case statusCodes.IN_PROGRESS:
+            console.log('Sign-in already in progress');
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            console.log('Play Services not available or outdated');
+            break;
+          default:
+            console.log('Google Sign-In error:', error);
+            break;
+        }
       } else {
-        console.log('error:', error);
+        console.log('An unexpected error occurred:', error);
       }
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
+  const handleCheck = async newValue => {
+    setAcceptedTerms(newValue);
+    await AsyncStorage.setItem(TERMS_KEY, newValue.toString());
+  };
+
   return (
-    <View style={{margin: 25}}>
+    <View style={{alignItems: 'center', justifyContent: 'center'}}>
       <Text style={{color: 'white', textAlign: 'center', fontWeight: 'bold'}}>
         Join today and start your journey
       </Text>
-      <View>
-        <TouchableOpacity
-          style={{
-            marginTop: 15,
-            marginBottom: 10,
-            width: 350,
-            height: 60,
-            backgroundColor: '#fff',
-            borderRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1,
-          }}
-          onPress={signIn}>
-          <View
-            style={{flexDirection: 'row', alignItems: 'center', fontSize: 25}}>
-            <Image
-              source={require('../Images/google.png')}
-              style={{width: 20, height: 20, marginRight: 5}}
-            />
-            <Text style={{color: 'black', fontSize: 18}}>
-              Sign in with Google
-            </Text>
-          </View>
-        </TouchableOpacity>
+
+      {/* Terms of Service Checkbox */}
+      <View style={styles.checkboxContainer}>
+        <CheckBox
+          value={acceptedTerms}
+          onValueChange={handleCheck}
+          tintColors={{true: '#fff', false: '#fff'}}
+        />
+        <Text
+          style={styles.termsText}
+          onPress={() =>
+            Linking.openURL(
+              'https://docs.google.com/document/d/151LhA1OvP-qOtm49uXdDBhc8ykmeK1h0TT-z8VkacvU/edit?usp=sharing',
+            )
+          }>
+          I agree to the Terms of Service
+        </Text>
       </View>
+
+      {/* Google Sign-In Button */}
+      <TouchableOpacity
+        disabled={isSigningIn || !acceptedTerms}
+        style={{
+          marginTop: 15,
+          marginBottom: 10,
+          width: Dimensions.get('window').width - 50,
+          height: Dimensions.get('window').height / 15,
+          backgroundColor: isSigningIn || !acceptedTerms ? '#ccc' : '#fff',
+          borderRadius: 10,
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1,
+        }}
+        onPress={signIn}>
+        <View style={{flexDirection: 'row', alignItems: 'center', fontSize: 25}}>
+          <Image
+            source={require('../Images/google.png')}
+            style={{width: 20, height: 20, marginRight: 5}}
+          />
+          <Text style={{color: 'black', fontSize: 18}}>
+            {isSigningIn ? 'Signing In...' : 'Sign in with Google'}
+          </Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -115,12 +177,15 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     shadowOffset: {width: 1, height: 13},
   },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  termsText: {
+    color: '#f1f1f1',
+    textDecorationLine: 'underline',
+  },
 });
 
 export default GmailSignIn;
-
-`box-shadow: rgba(240, 46, 170, 0.4) 5px 5px, 
-             rgba(240, 46, 170, 0.3) 10px 10px, 
-             rgba(240, 46, 170, 0.2) 15px 15px, 
-             rgba(240, 46, 170, 0.1) 20px 20px, 
-             rgba(240, 46, 170, 0.05) 25px 25px;`;

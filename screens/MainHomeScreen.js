@@ -18,14 +18,14 @@ import {
   FilledHome,
   FilledExplore,
   FilledStandings,
-  FilledProfile,
-} from '../assets/icons';
+  FilledProfile,} from '../assets/icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
 // const user = auth().currentUser;
 
-export default function App(props) {
+export default function MainHomeScreen(props) {
   useEffect(() => {
     // if(auth().currentUser){
     //   // getUser()
@@ -53,6 +53,8 @@ export default function App(props) {
 
   // }
 
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -70,10 +72,14 @@ export default function App(props) {
           }
 
           // You can return any component that you like here!
-          return <View>{iconName}</View>;
+          return (
+          <View style={{
+            top: 10
+          }}>{iconName}</View>
+        );
         },
-        // tabBarActiveTintColor: 'tomato',
-        // tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray',
         tabBarShowLabel: false,
         headerShown: false,
         tabBarStyle: {
@@ -81,6 +87,7 @@ export default function App(props) {
           height: 75,
           backgroundColor: '#1E1E1E',
           borderTopWidth: 0,
+          paddingBottom: insets.bottom + 65,
         },
       })}>
       <Tab.Screen name="Home" component={HomeScreen} />

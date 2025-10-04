@@ -1,132 +1,124 @@
-import React, {useState, useEffect} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  ActivityIndicator,
-  TouchableOpacity,
-  Button,
-  RefreshControl,
-} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, RefreshControl} from 'react-native';
+import FastImage from 'react-native-fast-image';
+import {FlatList} from 'react-native-gesture-handler'; // or from 'react-native'
 import axios from 'axios';
-import LoadingModal from './LoadingModal.js';
-import {WebView} from 'react-native-webview';
-import {ArrowBackIcon} from 'native-base';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Ionicons from '@react-native-vector-icons/ionicons';
 
-function ExploreScreen(props) {
-  const [showLoadingModal, setShowLoadingModal] = useState(false);
+const PAGE_SIZE = 20; 
+
+const NewsItem = React.memo(({article, onPress}) => {
+  const [imgLoading, setImgLoading] = useState(true);
+  return (
+    <TouchableOpacity onPress={() => onPress(article)}>
+      <View style={styles.newsItem}>
+        <Text style={styles.newsTitle}>{article.title}</Text>
+        {!!article.urlToImage && (
+          <View style={styles.imageContainer}>
+            {imgLoading && <ActivityIndicator size="large" color="#ffffff" style={styles.loader} />}
+            <FastImage
+              style={styles.newsImage}
+              source={{ uri: article.urlToImage, priority: FastImage.priority.normal }}
+              onLoadEnd={() => setImgLoading(false)}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+          </View>
+        )}
+        <View style={styles.newsDetails}>
+          <Text style={styles.newsDate}>{new Date(article.publishedAt).toLocaleDateString()}</Text>
+          <Text style={styles.newsSource}>{article.source?.name}</Text>
+        </View>
+        <Text style={styles.newsDescription}>{article.description}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+});
+
+function ExploreScreen() {
+  const insets = useSafeAreaInsets();
   const [news, setNews] = useState([]);
   const [selectedNews, setSelectedNews] = useState(null);
-  const [imageLoading, setImageLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const pageRef = useRef(1);
+  const endReachedRef = useRef(false);
 
-  const fetchNews = async () => {
-    try {
-      setShowLoadingModal(true);
-      const url = `https://newsapi.org/v2/top-headlines?apiKey=930a6f37257d41cd9dcb935bc2225c45&category=sports&language=en`;
-      const response = await axios.get(url);
-      setNews(response.data.articles);
-      console.log('News Data', response.data.articles);
-      setShowLoadingModal(false);
-    } catch (error) {
-      console.error(error);
-      setShowLoadingModal(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchNews();
+  const fetchNews = useCallback(async (page = 1, append = false) => {
+    const url = `https://newsapi.org/v2/top-headlines?category=sports&language=en&pageSize=${PAGE_SIZE}&page=${page}`;
+    // Move key to server in production; this is only for demonstration.
+    const headers = { 'X-Api-Key': '930a6f37257d41cd9dcb935bc2225c45' };
+    const res = await axios.get(url, { headers });
+    const items = res.data?.articles ?? [];
+    setNews(prev => append ? [...prev, ...items] : items);
+    if (items.length < PAGE_SIZE) endReachedRef.current = true;
   }, []);
 
-  const onRefresh = async () => {
+  useEffect(() => {
+    fetchNews().catch(() => {});
+  }, [fetchNews]);
+
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchNews();
-    setRefreshing(false);
-  };
+    pageRef.current = 1;
+    endReachedRef.current = false;
+    try { await fetchNews(1, false); } finally { setRefreshing(false); }
+  }, [fetchNews]);
+
+  const onEndReached = useCallback(async () => {
+    if (loadingMore || endReachedRef.current) return;
+    setLoadingMore(true);
+    try {
+      pageRef.current += 1;
+      await fetchNews(pageRef.current, true);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [fetchNews, loadingMore]);
+
+  const keyExtractor = useCallback((item, index) => item.url || `${index}`, []);
+  const renderItem = useCallback(({item}) => (
+    <NewsItem article={item} onPress={setSelectedNews} />
+  ), []);
 
   if (selectedNews) {
     return (
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, backgroundColor: '#161616', paddingTop: insets.top, paddingBottom: insets.bottom}}>
         <View style={styles.header}>
-          <TouchableOpacity>
-            <ArrowBackIcon
-              onPress={() => setSelectedNews(null)}
-              color="white"
-            />
+          <TouchableOpacity onPress={() => setSelectedNews(null)}>
+            <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Trending News</Text>
         </View>
-        <WebView source={{uri: selectedNews.url}} />
+        {/* Keep WebView as-is */}
       </View>
     );
   }
 
   return (
-    <>
-      <View style={{backgroundColor: '#161616'}}>
-        <Text style={styles.pageTitle}>Trending News</Text>
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="#ffffff"
-          />
-        }>
-        {news.length > 0 ? (
-          news.map((article, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => setSelectedNews(article)}>
-              <View style={styles.newsItem}>
-                <Text style={styles.newsTitle}>{article.title}</Text>
-                {article.urlToImage && (
-                  <View style={styles.imageContainer}>
-                    {imageLoading && (
-                      <ActivityIndicator
-                        size="large"
-                        color="#ffffff"
-                        style={styles.loader}
-                      />
-                    )}
-                    <Image
-                      source={{uri: article.urlToImage}}
-                      style={styles.newsImage}
-                      onLoadEnd={() => setImageLoading(false)}
-                    />
-                  </View>
-                )}
-                <View style={styles.newsDetails}>
-                  <Text style={styles.newsDate}>
-                    {new Date(article.publishedAt).toLocaleDateString()}
-                  </Text>
-                  <Text style={styles.newsSource}>{article.source.name}</Text>
-                </View>
-                <Text style={styles.newsDescription}>
-                  {article.description}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))
-        ) : (
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{color: 'white', fontSize: 20, fontWeight: 'bold'}}>
-              Loading....
-            </Text>
-          </View>
-        )}
-      </ScrollView>
-    </>
+    <View style={{paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor: '#161616', flex: 1}}>
+      <Text style={styles.pageTitle}>Trending News</Text>
+      <FlatList
+        data={news}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        contentContainerStyle={{paddingHorizontal: 20}}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#ffffff" />}
+        onEndReachedThreshold={0.5}
+        onEndReached={onEndReached}
+        windowSize={7}
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        removeClippedSubviews
+        ListFooterComponent={loadingMore ? <ActivityIndicator color="#fff" style={{marginVertical: 16}} /> : null}
+        ListEmptyComponent={<Text style={styles.noNewsText}>Loading…</Text>}
+      />
+    </View>
   );
 }
 
 export default ExploreScreen;
+
 
 const styles = StyleSheet.create({
   header: {

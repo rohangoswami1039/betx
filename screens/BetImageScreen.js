@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,12 +14,12 @@ import {
 } from 'react-native';
 // import {Image} from 'native-base'
 import LoadingModal from './LoadingModal.js';
-import {ArrowLeft} from '../assets/icons';
+import { ArrowLeft } from '../assets/icons';
 import firestore from '@react-native-firebase/firestore';
-import {ProgressView} from '@react-native-community/progress-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-function BetImageScreen({route, navigation}) {
+function BetImageScreen({ route, navigation }) {
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [betLink, setbetLink] = useState('');
   const [vote, setVote] = useState(route.params.match.votecount);
@@ -30,12 +30,12 @@ function BetImageScreen({route, navigation}) {
   const [noTotalVote, setNoTotalVote] = useState();
 
   const [check, Setcheck] = useState();
-  // console.log(route.params.match.vote,"galti dekho");
+  console.log(route, "galti dekho", navigation);
   const dimensions = Dimensions.get('window');
   const imageHeight = Math.round(dimensions.width);
   const imageWidth = dimensions.width - 20;
-  const {match, voting, winvote, heading, description} = route.params;
-  const {update, SetUpdate} = useState(false);
+  const { match, voting, winvote, heading, description } = route.params;
+  const { update, SetUpdate } = useState(false);
 
   const name = route.params.match.matchTitle;
   console.log(route.params.match, 'total data');
@@ -93,7 +93,7 @@ function BetImageScreen({route, navigation}) {
       if (isVoted) {
         const yesVote = Math.floor((vote * yesPercentage) / 100);
         const noVote = vote - yesVote;
-        console.log(yesVote, noVote, 'idhar pakdo');
+        // console.log(yesVote, noVote, 'idhar pakdo');
         if (check) {
           setYesTotalVote(yesVote);
           setNoTotalVote(noVote);
@@ -161,208 +161,161 @@ function BetImageScreen({route, navigation}) {
 
   const yesPercentage = route.params.match.vote;
   const noPercentage = 100 - yesPercentage;
+  const insets = useSafeAreaInsets();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'column',
-        paddingBottom: 20,
-        backgroundColor: '#161616',
-      }}>
-      <LoadingModal show={showLoadingModal} />
+    <View style={{
+      paddingTop: insets.top,
+      paddingBottom: insets.bottom,
+      backgroundColor: '#161616',
+      flex: 1
+    }}>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          paddingBottom: 20,
+          backgroundColor: '#161616',
+        }}>
+        <LoadingModal show={showLoadingModal} />
 
-      <ScrollView style={{backgroundColor: '#161616'}}>
-        <View style={{flexDirection: 'row', marginLeft: 28, marginRight: 28}}>
-          <ArrowLeft
-            style={{marginTop: 30}}
-            onPress={() => navigation.navigate('Home')}
-          />
+        <ScrollView style={{ backgroundColor: '#161616' }}>
+          <View style={{ flexDirection: 'row', marginLeft: 28, marginRight: 28 }}>
+            <ArrowLeft
+              style={{ marginTop: 30 }}
+              onPress={() => navigation.goBack()}
+            />
 
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text
-              style={{
-                textAlign: 'center',
-                color: '#ffff',
-                marginTop: 30,
-                fontSize: 20,
-                fontFamily: 'SourceSansPro',
-                marginLeft: '40%',
-              }}>
-              {' '}
-              Place a bet{' '}
-            </Text>
-            {/* <Pressable onPress={() => navigation.navigate('VideoAd')}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: '#ffff',
+                  marginTop: 30,
+                  fontSize: 20,
+                  fontFamily: 'SourceSansPro',
+                  marginLeft: '40%',
+                }}>
+                {' '}
+                Place a bet{' '}
+              </Text>
+              {/* <Pressable onPress={() => navigation.navigate('VideoAd')}>
                   <Text style={{ color: '#ffff', fontSize: 23, marginLeft: 105, marginTop:30,}}>ⓘ</Text>
                  </Pressable> */}
+            </View>
+          </View>
+
+          <View
+            style={{
+              marginLeft: 10,
+              marginRight: 10,
+              borderRadius: 12,
+              overflow: 'hidden',
+            }}
+          >
+            <Image
+              source={{ uri: route.params.match.predictionImage }}
+              style={{
+                height: imageHeight,
+                width: imageWidth,
+                resizeMode: 'contain',
+                borderRadius: 12,
+              }}
+              onLoadStart={() => setShowLoadingModal(true)}
+              onLoadEnd={() => setShowLoadingModal(false)}
+            />
+          </View>
+
+
+        </ScrollView>
+        {/* <View> */}
+        <View
+          style={{
+            elevation: 10,
+            backgroundColor: '#242323',
+            margin: 10,
+            borderRadius: 10,
+            marginTop: -80,
+            height: 120,
+            justifyContent: 'center',
+          }}>
+          <View style={{ margin: 10, padding: 5 }}>
+            <Text
+              style={{
+                color: '#FFFFFF',
+                fontSize: 16,
+                marginBottom: 10,
+                fontFamily: 'Segoe UI',
+                fontWeight: 'bold',
+              }}>
+              {route.params.match.heading}
+            </Text>
+            <Text
+              style={{
+                color: '#FFFFFF',
+                fontSize: 13,
+                marginBottom: 10,
+                fontFamily: 'Segoe UI',
+              }}>
+              {route.params.match.description}
+            </Text>
           </View>
         </View>
 
         <View
-          style={
-            {
-              // justifyContent: 'center',
-              // alignItems: 'center',
-              // marginTop:20
-            }
-          }>
-          <Image
-            source={{uri: route.params.match.predictionImage}}
-            style={{
-              // marginLeft:16,marginRight:16,
-
-              marginTop: -0,
-              marginLeft: 10,
-              marginRight: 10,
-              resizeMode: 'contain',
-              height: imageHeight,
-              width: imageWidth,
-            }}
-            alt="0"
-            onLoadStart={() => setShowLoadingModal(true)}
-            onLoadEnd={() => {
-              setShowLoadingModal(false);
-            }}
-          />
-        </View>
-      </ScrollView>
-      {/* <View> */}
-      <View
-        style={{
-          elevation: 10,
-          backgroundColor: '#1C1C1C',
-          margin: 10,
-          borderRadius: 10,
-          marginTop: -80,
-          height: 120,
-          justifyContent: 'center',
-        }}>
-        <View style={{margin: 10, padding: 5}}>
-          <Text
-            style={{
-              color: '#FFFFFF',
-              fontSize: 16,
-              marginBottom: 10,
-              fontFamily: 'Segoe UI',
-              fontWeight: 'bold',
-            }}>
-            {route.params.match.heading}
-          </Text>
-          <Text
-            style={{
-              color: '#FFFFFF',
-              fontSize: 13,
-              marginBottom: 10,
-              fontFamily: 'Segoe UI',
-            }}>
-            {route.params.match.description}
-          </Text>
-        </View>
-      </View>
-
-      <View
-        style={{
-          elevation: 10,
-          backgroundColor: '#1C1C1C',
-          marginBottom: 40,
-          margin: 10,
-          borderRadius: 10,
-        }}>
-        <View style={{margin: 10, padding: 5}}>
-          <Text
-            style={{
-              color: '#FFFFFF',
-              fontSize: 10,
-              marginBottom: 10,
-              fontFamily: 'Segoe UI',
-            }}>
-            WILL THIS PREDICTION COME TRUE?
-          </Text>
-          {/* </View> */}
-          {!isVoted ? (
-            <>
-              <Text
-                style={{
-                  color: '#FFFFFF',
-                  fontSize: 9,
-                  marginBottom: 8,
-                  fontFamily: 'Segoe UI',
-                }}>
-                Vote to see the result
-              </Text>
-              <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity
-                  onPress={voteYes}
+          style={{
+            elevation: 10,
+            backgroundColor: '#292929',
+            marginBottom: 40,
+            margin: 10,
+            borderRadius: 10,
+          }}>
+          <View style={{ margin: 10, padding: 5, }}>
+            <Text
+              style={{
+                color: '#FFFFFF',
+                fontSize: 10,
+                marginBottom: 10,
+                fontFamily: 'Segoe UI',
+              }}>
+              WILL THIS PREDICTION COME TRUE?
+            </Text>
+            {/* </View> */}
+            {!isVoted ? (
+              <>
+                <Text
                   style={{
-                    backgroundColor: '#76A963',
-                    padding: 8,
-                    flex: 1,
-                    marginRight: 10,
+                    color: '#FFFFFF',
+                    fontSize: 9,
+                    marginBottom: 8,
+                    fontFamily: 'Segoe UI',
                   }}>
-                  <Text style={{color: '#FFFFFF', fontFamily: 'Segoe UI'}}>
-                    YES
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={voteNo}
-                  style={{backgroundColor: '#F14C45', padding: 8, flex: 1}}>
-                  <Text style={{color: '#FFFFFF', fontFamily: 'Segoe UI'}}>
-                    No
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              <Text
-                style={{
-                  color: '#FFFFFF',
-                  marginTop: 7,
-                  fontFamily: 'Segoe UI',
-                }}>
-                Total votes : {vote}
-              </Text>
-            </>
-          ) : (
-            <View>
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>Yes</Text>
-                <Text style={styles.percentage}>{yesPercentage}% </Text>
-                <ProgressBarAndroid
-                  styleAttr="Horizontal"
-                  indeterminate={false}
-                  color="#76A963"
-                  progress={yesPercentage / 100}
-                  style={styles.progressBar}
-                  progressTintColor="#76A963"
-                  trackTintColor="#FFFFFF"
-                />
-              </View>
-
-              <View style={{alignItems: 'flex-end'}}>
-                <Text style={{color: 'white'}}>{yesTotalVote} votes</Text>
-              </View>
-
-              <View style={styles.rowContainer}>
-                <Text style={styles.label}>No </Text>
-                <Text style={{...styles.percentage, color: '#F14C45'}}>
-                  {noPercentage}%{' '}
+                  Vote to see the result
                 </Text>
-                <ProgressBarAndroid
-                  styleAttr="Horizontal"
-                  indeterminate={false}
-                  color="#F14C45"
-                  progress={noPercentage / 100}
-                  style={styles.progressBar}
-                  progressTintColor="#F14C45"
-                  trackTintColor="#FFFFFF"
-                />
-              </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity
+                    onPress={voteYes}
+                    style={{
+                      backgroundColor: '#76A963',
+                      padding: 8,
+                      flex: 1,
+                      marginRight: 10,
+                      borderRadius: 8
+                    }}>
+                    <Text style={{ color: '#FFFFFF', fontFamily: 'Segoe UI' }}>
+                      YES
+                    </Text>
+                  </TouchableOpacity>
 
-              <View style={{alignItems: 'flex-end'}}>
-                <Text style={{color: 'white'}}>{noTotalVote} votes</Text>
-              </View>
+                  <TouchableOpacity
+                    onPress={voteNo}
+                    style={{ backgroundColor: '#F14C45', padding: 8, flex: 1, borderRadius: 8 }}>
+                    <Text style={{ color: '#FFFFFF', fontFamily: 'Segoe UI' }}>
+                      No
+                    </Text>
+                  </TouchableOpacity>
+                </View>
 
-              <View>
                 <Text
                   style={{
                     color: '#FFFFFF',
@@ -371,64 +324,115 @@ function BetImageScreen({route, navigation}) {
                   }}>
                   Total votes : {vote}
                 </Text>
+              </>
+            ) : (
+              <View>
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>Yes</Text>
+                  <Text style={styles.percentage}>{yesPercentage}% </Text>
+                  <ProgressBarAndroid
+                    styleAttr="Horizontal"
+                    indeterminate={false}
+                    color="#76A963"
+                    progress={yesPercentage / 100}
+                    style={styles.progressBar}
+                    progressTintColor="#76A963"
+                    trackTintColor="#FFFFFF"
+                  />
+                </View>
+
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={{ color: 'white' }}>{yesTotalVote} votes</Text>
+                </View>
+
+                <View style={styles.rowContainer}>
+                  <Text style={styles.label}>No </Text>
+                  <Text style={{ ...styles.percentage, color: '#F14C45' }}>
+                    {noPercentage}%{' '}
+                  </Text>
+                  <ProgressBarAndroid
+                    styleAttr="Horizontal"
+                    indeterminate={false}
+                    color="#F14C45"
+                    progress={noPercentage / 100}
+                    style={styles.progressBar}
+                    progressTintColor="#F14C45"
+                    trackTintColor="#FFFFFF"
+                  />
+                </View>
+
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={{ color: 'white' }}>{noTotalVote} votes</Text>
+                </View>
+
+                <View>
+                  <Text
+                    style={{
+                      color: '#FFFFFF',
+                      marginTop: 7,
+                      fontFamily: 'Segoe UI',
+                    }}>
+                    Total votes : {vote}
+                  </Text>
+                </View>
               </View>
-            </View>
-          )}
+            )}
+          </View>
         </View>
-      </View>
 
-      <View
-        style={{
-          marginLeft: 30,
-          marginRight: 30,
-        }}>
-        <Text>{route.params.match.matchDate.toDate() < new Date()}</Text>
-        {
-          route.params.match.matchDate.toDate() <
-          new Date().setMinutes(new Date().getMinutes() - 10) ? null : (
-            // <View style={{flexDirection: 'row', justifyContent: 'center' }}>
+        <View
+          style={{
+            marginLeft: 30,
+            marginRight: 30,
+          }}>
+          <Text>{route.params.match.matchDate.toDate() < new Date()}</Text>
+          {
+            route.params.match.matchDate.toDate() <
+              new Date().setMinutes(new Date().getMinutes() - 10) ? null : (
+              // <View style={{flexDirection: 'row', justifyContent: 'center' }}>
 
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('VideoAd');
-              }}
-              // style={{
-              //   height: 44,
-              //   marginTop: 10,
-              //   borderRadius: 22,
-              //   backgroundColor: '#EE775A',
-              //   justifyContent: 'center',
-              //
-              // }}
-              style={{
-                borderRadius: 22,
-                justifyContent: 'center',
-                marginTop: 10,
-                fontSize: 16,
-                borderWidth: 2,
-                borderColor: '#F63D68',
-                marginRight: 10,
-                height: 44,
-                color: 'white',
-                textAlignVertical: 'center',
-                textAlign: 'center',
-                backgroundColor: '#1e1e1e',
-              }}>
-              <Text style={{textAlign: 'center', fontSize: 16, color: 'white'}}>
-                How to place a bet ?
-              </Text>
-            </TouchableOpacity>
-          )
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('VideoAd');
+                }}
+                // style={{
+                //   height: 44,
+                //   marginTop: 10,
+                //   borderRadius: 22,
+                //   backgroundColor: '#EE775A',
+                //   justifyContent: 'center',
+                //
+                // }}
+                style={{
+                  borderRadius: 22,
+                  justifyContent: 'center',
+                  marginTop: 10,
+                  fontSize: 16,
+                  borderWidth: 2,
+                  borderColor: '#F63D68',
+                  marginRight: 10,
+                  height: 44,
+                  color: 'white',
+                  textAlignVertical: 'center',
+                  textAlign: 'center',
+                  backgroundColor: '#1e1e1e',
+                }}>
+                <Text style={{ textAlign: 'center', fontSize: 16, color: 'white' }}>
+                  How to place a bet ?
+                </Text>
+              </TouchableOpacity>
+            )
 
-          // {/* <TouchableOpacity
-          //     onPress={ ()=>{ Linking.openURL(betLink)}}
-          //     style={{flex: 1, height: 44, marginTop: 10,borderRadius:22 ,backgroundColor: '#C8524F' ,justifyContent: 'center', marginLeft:10}}>
-          //     <Text style={{textAlign: 'center',fontSize:16,color: 'white'}}>Place a Bet</Text>
+            // {/* <TouchableOpacity
+            //     onPress={ ()=>{ Linking.openURL(betLink)}}
+            //     style={{flex: 1, height: 44, marginTop: 10,borderRadius:22 ,backgroundColor: '#C8524F' ,justifyContent: 'center', marginLeft:10}}>
+            //     <Text style={{textAlign: 'center',fontSize:16,color: 'white'}}>Place a Bet</Text>
 
-          // </TouchableOpacity> */}
+            // </TouchableOpacity> */}
 
-          // </View>
-        }
+            // </View>
+          }
+        </View>
       </View>
     </View>
   );

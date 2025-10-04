@@ -5,6 +5,7 @@ import { Button, TouchableOpacity, View, Text, Image , StyleSheet, Pressable, Sc
 import{ArrowLeft} from '../assets/icons';
 import { WebView } from 'react-native-webview';
 import YouTubeIframe from 'react-native-youtube-iframe';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 function getYouTubeVideoId(url) {
   const regExp = /^(?:(?:https?:)?\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/;
   const match = url.match(regExp);
@@ -33,15 +34,16 @@ const handlePause = () => {
   youtubePlayerRef.current?.pause(); // Pause the video
 };
 
+const insets = useSafeAreaInsets();
 
     return (
-      <ScrollView>
+      <ScrollView style={{flex: 1, backgroundColor: '#161616', paddingTop: insets.top, paddingBottom: insets.bottom}}>
         <View style={{flex: 1, paddingBottom: 20, backgroundColor: '#181829'}}>
           {/* <Text>hello </Text> */}
           <View style={{flexDirection: 'row', marginLeft: 28, marginRight: 28}}>
             <ArrowLeft
               style={{marginTop: 30}}
-              onPress={() => props.navigation.navigate('Home')}
+              onPress={() => props.navigation.goBack()}
             />
 
             <View style={{flexDirection: 'row', alignItems: 'center'}}>

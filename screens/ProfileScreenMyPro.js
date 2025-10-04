@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, ScrollView, Alert, TouchableOpacity, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {
   PersonRound,
   CallRound,
@@ -10,26 +11,15 @@ import {
   LockIcon,
   EditIcon,
 } from '../assets/icons';
-import {
-  Box,
-  Text,
-  Avatar,
-  HStack,
-  View,
-  ScrollView,
-  Button,
-  Input,
-  Pressable,
-} from 'native-base';
-
-import {CustomeAlert} from '../Components';
-
-import LinearGradient from 'react-native-linear-gradient';
-import firestore from '@react-native-firebase/firestore';
+import { CustomeAlert } from '../Components';
+import { firestore } from './../firebaseConfig';
 import auth from '@react-native-firebase/auth';
 import messaging from '@react-native-firebase/messaging';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import Icon from "@react-native-vector-icons/fontawesome";
 
-function ProfileScreenMyPro({props}) {
+
+function ProfileScreenMyPro({ props }) {
   const user = auth().currentUser;
   const [userFind, setUserFind] = useState('');
 
@@ -50,24 +40,23 @@ function ProfileScreenMyPro({props}) {
   const [alertDescription, setAlertDescription] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
 
+  // For Users Number Update 
+  const [newPhoneNumber, setNewPhoneNumber] = useState('');
+
+
   const navigation = useNavigation();
 
-  // const deleteUsersByName = async (name) => {
-  //   try {
-  //     const userRef = firestore().collection('WhatsppALoginData');
-  //     const snapshot = await userRef.where("userEmail", "==", name).get();
 
-  //     snapshot.forEach(async (doc) => {
-  //       console.log('Deleting user:', doc.id);
-  //       await doc.ref.delete();
-  //     });
 
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+useFocusEffect(
+  React.useCallback(() => {
+    setEditMode(false);
+    setNewPhoneNumber('');
+    checkUserExists();
+  }, [])
+);
 
-  // deleteUsersByName("iquablarshad@gmail.com");
+
 
   useEffect(() => {
     const userdataToFind = async () => {
@@ -76,30 +65,9 @@ function ProfileScreenMyPro({props}) {
         if (userData !== null) {
           const data1 = JSON.parse(userData);
           console.log(data1, 'dataaa1');
+          // console.log('stored the value');
 
-          // if(data1.data.userMobile!==undefined || null){
-          //   setUserFind(data1.data.userMobile);
-          // }
-
-          console.log('stored the value');
-
-          // const userRef = firestore().collection('WhatsppALoginData').doc(data1.user.waId);
-          // const doc = await userRef.get();
-          // if (doc.exists) {
-          //   console.log('User data:', doc.data());
-          //   const data = doc.data();
-          //   setUserName(data.userName);
-          //   setUserPhone(data.userMobile);
-          //   setWaId(data.waId);
-          //   setUserEmail(data.userEmail);
-          //   setUserAddress(data.userAddress)
-          // } else {
-          //   console.log('User does not exist userdataToFind!');
-          //   // Create new user
-          //   console.log(data1, "checking");
           let som = await data1;
-          //   createUser(som.user.waId, som)
-          // }
 
           const id = som.user.waId ? som.user.waId : som.user.id;
 
@@ -126,24 +94,22 @@ function ProfileScreenMyPro({props}) {
             userEmail: userEmail
               ? userEmail
               : userData.user
-              ? userData.user.email
-              : '',
+                ? userData.user.email
+                : '',
             // userName:  userData.data && userData.data.userName ? userData.data.userName : userData.user &&  userData.user.name? userData.user.name :'',
             userName:
               userData.data && userData.data.userName
                 ? userData.data.userName
                 : userData.user.name
-                ? userData.user.name
-                : '',
+                  ? userData.user.name
+                  : '',
 
-            // userMobile: userData.data.userMobile ? userData.data.userMobile : (userData.user ? userData.user.email : ''),
-            // userMobile: userEmail ? userEmail : (userData.user ? userData.user.email : '')
             userMobile:
               userData.data && userData.data.userMobile
                 ? userData.data.userMobile
                 : userData.user
-                ? ''
-                : '',
+                  ? ''
+                  : '',
 
             userAddress: userAddress,
             waName: waNameUser,
@@ -186,66 +152,6 @@ function ProfileScreenMyPro({props}) {
     // Call the function to get FCM Token
     getFCMToken();
 
-    // Check if user exists in Firebase
-    const checkUserExists = async (waId, som) => {
-      // const userName = userInfo.user.name ? userInfo.user.name : '';
-      console.log('mobile before', som.user.email);
-      console.log(mobile, 'mobile');
-      let mobile;
-      if (som.user.email) {
-        mobile = som.user.email;
-      } else {
-        mobile = som.data.userMobile;
-      }
-      // const mobile=  som.user.email? som.user.email : som.data.userMobile;
-      console.log(mobile, 'userfindddddd');
-      try {
-        // const userRef = firestore().collection('WhatsppALoginData').doc(mobile);
-
-        const userRef = firestore().collection('WhatsppALoginData');
-        let snapshot;
-
-        if (
-          som &&
-          som.data &&
-          som.data.userMobile !== null &&
-          som.data.userMobile !== undefined
-        ) {
-          console.log('if');
-          snapshot = await userRef.where('userMobile', '==', mobile).get();
-          console.log('if', snapshot);
-        } else {
-          console.log('else');
-          setUserEmail(som.user.email);
-          setUserName(som.user.name);
-          snapshot = await userRef.where('userEmail', '==', mobile).get();
-          console.log('else', snapshot);
-        }
-
-        // const snapshot = await userRef.get();
-
-        if (snapshot.size > 0) {
-          console.log('User data: doc data', snapshot.docs[0].data());
-          // console.log('User data:  doc data',snapshot.data());
-          const data = snapshot.docs[0].data();
-          setUserName(data.userName);
-          setUserPhone(data.userMobile);
-          setWaId(data.waId);
-          setUserEmail(data.userEmail);
-          setTimeStamp(data.createdAt);
-          setWaName(data.waName);
-          setWaNumber(data.waNumber);
-          setFCMToken(data.FCMToken);
-          setUserAddress(data.userAddress);
-        } else {
-          console.log('User does not exist checkUserExists!');
-          createUser(waId, som);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     return () => {
       // cleanup function
       console.log('Cleanup function called!');
@@ -257,6 +163,47 @@ function ProfileScreenMyPro({props}) {
       getFCMToken();
     }
   }, []);
+
+
+   const checkUserExists = async () => {
+      try {
+        const currentUser = auth().currentUser;
+
+        if (!currentUser) {
+          console.log('No authenticated user found');
+          return;
+        }
+        
+        // Fetch user document from Users collection
+        const userDoc = await firestore()
+        .collection('Users')
+        .doc(currentUser.uid)
+        .get();
+        console.log('Authenticated user found', userDoc);
+
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+
+          // Set user phone if available
+          if (userData?.mobile) {
+            setUserPhone(userData.mobile);
+          } else {
+            setUserPhone(null); // show "not added" state
+          }
+
+          // Optional: Set waId if stored there
+          if (userData?.waId) {
+            setWaId(userData.waId);
+          }
+        } else {
+          console.log('User document not found');
+          setUserPhone(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
 
   const getFCMToken = async () => {
     try {
@@ -290,7 +237,7 @@ function ProfileScreenMyPro({props}) {
                 // props.navigation.replace('Login');
                 navigation.reset({
                   index: 0,
-                  routes: [{name: 'Login'}],
+                  routes: [{ name: 'Login' }],
                 });
               })
               .catch(error => {
@@ -306,6 +253,30 @@ function ProfileScreenMyPro({props}) {
         },
       },
     ]);
+
+  const updatePhoneNumber = async () => {
+    try {
+      const phoneNumberObj = parsePhoneNumberFromString(newPhoneNumber);
+
+      if (!phoneNumberObj || !phoneNumberObj.isValid()) {
+        Alert.alert('Invalid Number', 'Please enter a valid mobile number.');
+        return;
+      }
+
+      const userId = auth().currentUser.uid;
+      await firestore().collection('Users').doc(userId).update({
+        mobile: phoneNumberObj.number // stores in +CountryCode format
+      });
+
+      setUserPhone(phoneNumberObj.number);
+      setEditMode(false);
+      console.log('Phone number updated successfully!');
+    } catch (error) {
+      console.error('Error updating phone number: ', error);
+    }
+  };
+
+
   return (
     <>
       <CustomeAlert
@@ -314,19 +285,21 @@ function ProfileScreenMyPro({props}) {
         title={alertTitle}
         description={alertDescription}
       />
-      <ScrollView>
+      <ScrollView style={{ backgroundColor: '#161616', padding: 12 }}>
         <View style={styles.mainView} pl="10" pr="10" mt="10">
-          <PersonRound />
+          <View style={{ top: 8 }}>
+            <PersonRound />
+          </View>
           <View
             style={styles.innerView}
-            borderBottomWidth="2"
+            borderBottomWidth={2}
             borderColor="#222232">
-            <View ml="5" mb="5">
-              <Text style={{color: 'white'}} fontSize="lg">
+            <View style={{ top: 8 }}>
+              <Text style={{ color: 'white' }} fontSize="lg">
                 Name
               </Text>
               {
-                <Text style={{color: 'white'}}>
+                <Text style={{ color: 'white' }}>
                   {auth().currentUser.displayName}
                 </Text>
               }
@@ -335,18 +308,20 @@ function ProfileScreenMyPro({props}) {
         </View>
 
         <View style={styles.mainView} pl="10" pr="10" mt="2">
-          <EmailRound />
+          <View style={{ top: 8 }}>
+            <EmailRound />
+          </View>
           <View
             style={styles.innerView}
-            borderBottomWidth="2"
+            borderBottomWidth={2}
             borderColor="#222232">
-            <View ml="5">
-              <Text style={{color: 'white'}} fontSize="lg">
+            <View style={{ top: 8 }}>
+              <Text style={{ color: 'white' }} fontSize="lg">
                 Email
               </Text>
-              <Text style={{color: 'white'}}>{auth().currentUser.email}</Text>
+              <Text style={{ color: 'white' }}>{auth().currentUser.email}</Text>
             </View>
-            <View style={{height: 70}}>
+            <View style={{ height: 70 }}>
               <Text></Text>
               <LockIcon />
             </View>
@@ -354,25 +329,61 @@ function ProfileScreenMyPro({props}) {
         </View>
 
         <View style={styles.mainView} pl="10" pr="10" mt="2" mb="7">
-          <CallRound />
-          <View
-            style={styles.innerView}
-            borderBottomWidth="2"
-            borderColor="#222232">
-            <View ml="5" mb="5">
-              <Text style={{color: 'white'}} fontSize="lg">
-                Phone Number
-              </Text>
-              {
-                <Text style={{color: 'white'}}>
-                  {auth().currentUser.phoneNumber ||
-                    'Phone Number is not Added'}
-                </Text>
-              }
-            </View>
+          <View style={{ marginTop: 12 }} />
+          <View style={{ top: 8 }}>
+            <CallRound />
           </View>
+          <View style={styles.innerView} borderBottomWidth={2} borderColor="#222232">
+            <View style={{ top: 8 }}>
+              <Text style={{ color: 'white' }} fontSize="lg">Phone Number</Text>
+
+              {editMode ? (
+                <TextInput
+                  style={{ color: 'white', borderBottomWidth: 1, borderColor: 'gray' }}
+                  value={newPhoneNumber}
+                  onChangeText={setNewPhoneNumber}
+                  placeholder="Enter phone number with country code (+1...)"
+                  placeholderTextColor="gray"
+                  keyboardType="phone-pad"
+                />
+
+              ) : (
+                <Text style={{ color: 'white' }}>
+                  {userPhone || 'Phone Number is not Added'}
+                </Text>
+              )}
+            </View>
+
+            <TouchableOpacity
+              onPress={() => {
+                if (editMode) {
+                  updatePhoneNumber();
+                } else {
+                  setEditMode(true);
+                }
+              }}
+              style={{ marginTop: 12, padding: 6, borderRadius: 8, }}
+            >
+              <Text style={{ color: 'white' }}>
+                {editMode ? 
+                  <Icon
+                    name='save'
+                    size={24}
+                    color={'#ffff'}
+                  />
+                : 
+                   <Icon
+                    name='edit'
+                    size={24}
+                    color={'#ffff'}
+                  />
+                }
+              </Text>
+            </TouchableOpacity>
+          </View>
+
         </View>
-        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
           <Text
             style={{
               borderRadius: 16,
@@ -385,6 +396,7 @@ function ProfileScreenMyPro({props}) {
               textAlignVertical: 'center',
               textAlign: 'center',
               backgroundColor: '#1e1e1e',
+              marginTop: 22
             }}
             onPress={() => signOut()}>
             Sign Out
@@ -412,7 +424,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // height:70,
+    height: 70,
+    paddingHorizontal: 12
   },
   signOutButton: {
     fontSize: 20,

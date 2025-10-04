@@ -1,13 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import { Text,StyleSheet, View,Modal,Animated,Easing} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {
-  HStack,
-  Spinner,
-  Heading,
-  Button,
-  Handball,
-} from 'native-base';
 import{Loader
 } from '../assets/icons'
 

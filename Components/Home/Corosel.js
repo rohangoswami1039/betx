@@ -1,72 +1,67 @@
-import React, {useState, useRef, useEffect} from 'react';
-import {View, Dimensions, Image, StyleSheet} from 'react-native';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
-import firestore from '@react-native-firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { View, Dimensions, Image, StyleSheet } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
+import { firestore } from '../../firebaseConfig';
 
-export const SLIDER_WIDTH = Dimensions.get('window').width - 55;
-export const ITEM_WIDTH = Math.round(SLIDER_WIDTH);
+const { width, height } = Dimensions.get('window');
+const ITEM_WIDTH = width;
+const ITEM_HIEGHT = height;
 
-const {width, height} = Dimensions.get('window');
-
-function CarouselComponent(props) {
-  const [index, setIndex] = useState(0);
+function CarouselComponent() {
   const [bannerList, setBannerList] = useState([]);
-  const isCarousel = useRef(null);
-
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
   useEffect(() => {
-    getBanners();
-  }, []);
-
-  function getBanners() {
-    firestore()
+    const unsubscribe = firestore()
       .collection('BannerImages')
       .orderBy('dateTime', 'desc')
       .onSnapshot(querySnapshot => {
-        const li = [];
-        querySnapshot.forEach(documentSnapshot => {
-          li.push({...documentSnapshot.data(), key: documentSnapshot.id});
+        const banners = [];
+        querySnapshot.forEach(doc => {
+          banners.push({ ...doc.data(), key: doc.id });
         });
-        setBannerList(li);
+        setBannerList(banners);
       });
-  }
 
-  const renderItem = ({item}) => {
-    return (
-      <View style={styles.imageContainer}>
-        <Image
-          resizeMode="contain"
-          source={{uri: item.image}}
-          style={styles.image}
-        />
-      </View>
-    );
-  };
+    return () => unsubscribe();
+  }, []);
+
+  const renderItem = ({ item }) => (
+    <View style={styles.imageContainer}>
+      <Image
+        source={{ uri: item.image }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+    </View>
+  );
+  
 
   return (
     <View style={styles.container}>
       <Carousel
-        ref={isCarousel}
+        loop
+        width={ITEM_WIDTH}
+        height={200}
+        autoPlay={true}
         data={bannerList}
+        onSnapToItem={setCurrentIndex}
         renderItem={renderItem}
-        sliderWidth={SLIDER_WIDTH}
-        itemWidth={ITEM_WIDTH}
-        onSnapToItem={setIndex}
-        decelerationRate={0.25}
-        autoplay={true}
-        loop={true}
+        style={{ width: ITEM_WIDTH - 12, marginHorizontal: 6 }}
+        autoPlayInterval={1500}
+        scrollAnimationDuration={1200}
       />
-
-      <Pagination
-        dotsLength={bannerList.length}
-        activeDotIndex={index}
-        carouselRef={isCarousel}
-        dotStyle={styles.activeDot}
-        tappableDots={true}
-        inactiveDotStyle={styles.inactiveDot}
-        inactiveDotOpacity={0.4}
-        inactiveDotScale={0.6}
-        containerStyle={styles.paginationContainer}
-      />
+      <View style={styles.paginationContainer}>
+        {bannerList.map((_, idx) => (
+          <View
+            key={idx}
+            style={[
+              styles.dot,
+              idx === currentIndex ? styles.activeDot : styles.inactiveDot,
+            ]}
+          />
+        ))}
+      </View>
     </View>
   );
 }
@@ -75,28 +70,42 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 10,
     alignItems: 'center',
+    right: 4,
   },
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    width: ITEM_WIDTH - 24,
+    height: ITEM_HIEGHT / 4.5,
+    borderRadius: 18,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    alignSelf: 'center',
+    // marginVertical: 10,
   },
   image: {
     width: '100%',
-    height: 200,
+    height: '100%',
+    borderRadius: 18,
+    resizeMode: 'cover',
   },
   paginationContainer: {
-    position: 'absolute',
-    top: 200,
-    paddingVertical: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 22,
   },
-  activeDot: {
+  dot: {
     width: 10,
     height: 10,
     borderRadius: 5,
+    marginHorizontal: 6,
+  },
+  activeDot: {
     backgroundColor: '#007FFF',
   },
   inactiveDot: {
     backgroundColor: '#D9D9D9',
+    opacity: 0.4,
   },
 });
 

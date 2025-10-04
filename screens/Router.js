@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NativeBaseProvider, extendTheme } from 'native-base';
 const Stack = createNativeStackNavigator();
 
 import MainHomeScreen from './MainHomeScreen.js';
@@ -18,11 +17,11 @@ import VideoAd from './VideoAd.js';
 import HomeScreen from './HomeScreen.js';
 import Wallet from './Wallet.js';
 import Notification from './Notification.js';
+import ProfileScreen from './ProfileScreen.js';
 
 function Router({ props, navigation }) {
  
   return (
-    <NativeBaseProvider>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Login"
@@ -36,30 +35,15 @@ function Router({ props, navigation }) {
             <Stack.Screen name="BetImageScreen" component={BetImageScreen} />
             <Stack.Screen name='VideoAd' component={VideoAd} />
             <Stack.Screen name='Wallet' component={Wallet} />
-            <Stack.Screen name='Notification' component={Notification} />
-
-
-           
-            <Stack.Screen
-              name="PredictionHistory"
-              component={PredictionHistory}
-            />
-            <Stack.Screen
-              name="NotificationScreen"
-              component={NotificationScreen}
-            />
-            <Stack.Screen
-              name="ExploreArticleDetails"
-              component={ExploreArticleDetails}
-            />
-            <Stack.Screen
-              name="NoInternetScreen"
-              component={NoInternetScreen}
-            />
+            <Stack.Screen name='Notification' component={Notification} />           
+            <Stack.Screen name="PredictionHistory" component={PredictionHistory}  />
+            <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
+            <Stack.Screen name="ExploreArticleDetails" component={ExploreArticleDetails} />
+            <Stack.Screen name="NoInternetScreen" component={NoInternetScreen} />
+           <Stack.Screen  name="Profile" component={ProfileScreen} />
           </React.Fragment>
         </Stack.Navigator>
       </NavigationContainer>
-    </NativeBaseProvider>
   );
 }
 

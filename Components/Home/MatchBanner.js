@@ -1,9 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {Text, TouchableOpacity, ToastAndroid} from 'react-native';
-
-import {Image, View} from 'native-base';
+import {Text, TouchableOpacity, ToastAndroid, View, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+import firestore from '../../firebaseConfig';
 import auth from '@react-native-firebase/auth';
 import RazorpayCheckout from 'react-native-razorpay';
 import moment from 'moment';
@@ -172,8 +170,10 @@ function MatchBanner(props) {
             console.warn('Clicked on flat list');
           }}>
           <View
-            style={{width: '80%', backgroundColor: '#1E1E1E'}}
-            borderLeftRadius="16">
+            style={{width: '80%', backgroundColor: '#313131', 
+            borderTopLeftRadius: 12,
+            borderBottomLeftRadius: 12,
+            }}>
             <View style={{flexDirection: 'row'}}>
               <View
                 style={{
@@ -267,6 +267,8 @@ function MatchBanner(props) {
               backgroundColor: '#5D5C64',
               justifyContent: 'center',
               alignItems: 'center',
+              borderTopRightRadius: 12,
+            borderBottomRightRadius: 12,
             }}
             borderRightRadius="16">
             <Text style={{color: 'white', fontSize: 14, fontWeight: 'bold'}}>
