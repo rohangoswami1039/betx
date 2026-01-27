@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
   Linking,
   StatusBar,
   StyleSheet,
@@ -18,7 +16,7 @@ import DeviceInfo from 'react-native-device-info';
 import { firestore } from './firebaseConfig.js';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import AppLogoSlogan from './assets/images/AppLogoSlogan.png';
-
+// import { StripeProvider } from '@stripe/stripe-react-native';
 
 
 const App = () => {
@@ -78,6 +76,7 @@ const App = () => {
   }, []);
 
   return (
+    //  <StripeProvider publishableKey="pk_test_51SQYLkPadpW7zTTuMxKoTpfXd2pUDW0ZlX8KyV7xIZqOEeax2inZgdrLawM4q8Siq7pIptKbPQeNy3UDbg1ThXlO009jLMoBRl">
     <>
       <Modal
         visible={showUpdateModal}
@@ -109,6 +108,7 @@ const App = () => {
 
       {!showUpdateModal && <Router />}
     </>
+    // </StripeProvider>
   );
 };
 

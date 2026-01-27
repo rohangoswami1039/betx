@@ -18,6 +18,9 @@ import HomeScreen from './HomeScreen.js';
 import Wallet from './Wallet.js';
 import Notification from './Notification.js';
 import ProfileScreen from './ProfileScreen.js';
+import { PrivacyPolicyScreen, TermsAndConditionsScreen } from './PolicyScreens';
+import PaymentScreen from './PaymentScreen.js';
+
 
 function Router({ props, navigation }) {
  
@@ -41,6 +44,9 @@ function Router({ props, navigation }) {
             <Stack.Screen name="ExploreArticleDetails" component={ExploreArticleDetails} />
             <Stack.Screen name="NoInternetScreen" component={NoInternetScreen} />
            <Stack.Screen  name="Profile" component={ProfileScreen} />
+           <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+           <Stack.Screen name="TermsAndConditions" component={TermsAndConditionsScreen} />
+           <Stack.Screen name="Payment" component={PaymentScreen} />
           </React.Fragment>
         </Stack.Navigator>
       </NavigationContainer>

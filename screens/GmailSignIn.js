@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -9,20 +9,22 @@ import {
   Linking,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
-import {firestore} from '../firebaseConfig';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { firestore } from '../firebaseConfig';
 import CheckBox from '@react-native-community/checkbox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  useNavigation,
+} from '@react-navigation/native';
 
 const TERMS_KEY = 'hasAcceptedTerms';
+const POLICY_TERMS = 'hasAcceptedPolicy';
 
-const GmailSignIn = props => {
+const GmailSignIn = () => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-
+  const [acceptedPolicy, setAcceptedPolicy] = useState(false);
+  const navigation = useNavigation();
   useEffect(() => {
     GoogleSignin.configure({
       offlineAccess: false,
@@ -33,11 +35,40 @@ const GmailSignIn = props => {
 
     // Load saved checkbox state
     const loadTerms = async () => {
-      const saved = await AsyncStorage.getItem(TERMS_KEY);
-      if (saved === 'true') setAcceptedTerms(true);
+      try {
+        const saved = await AsyncStorage.getItem(TERMS_KEY);
+        const saved_Policy = await AsyncStorage.getItem(POLICY_TERMS);
+        if (saved && JSON.parse(saved) === true && saved_Policy && JSON.parse(saved_Policy) === true) {
+          setAcceptedTerms(true);
+          setAcceptedPolicy(true)
+        }
+      } catch (e) {
+        console.log('Error loading saved terms state:', e);
+      }
     };
     loadTerms();
   }, []);
+
+  const handleCheck = async (newValue) => {
+    try {
+      setAcceptedTerms(newValue);
+      await AsyncStorage.setItem(TERMS_KEY, JSON.stringify(newValue));
+    } catch (e) {
+      console.log('Error saving terms state:', e);
+    }
+  };
+
+  const handlePolicyCheck = async (newValue) => {
+    try {
+      // ✅ First update and save state
+      setAcceptedPolicy(newValue);
+      await AsyncStorage.setItem(POLICY_TERMS, JSON.stringify(newValue));
+
+    } catch (e) {
+      console.log('Error saving policy state:', e);
+    }
+  };
+
 
   const signIn = async () => {
     if (isSigningIn) {
@@ -56,7 +87,7 @@ const GmailSignIn = props => {
       // Sign out any previous session to ensure fresh sign-in
       await GoogleSignin.signOut();
       const response = await GoogleSignin.signIn();
-      const {idToken} = await GoogleSignin.signIn();
+      const { idToken } = await GoogleSignin.signIn();
       const googleCredential = auth.GithubAuthProvider.credential(idToken);
 
       const userLoginToken = response.data.idToken;
@@ -65,7 +96,7 @@ const GmailSignIn = props => {
           userLoginToken,
         );
         const userInfo = await auth().signInWithCredential(googleCredential);
-        console.log('In My SignIn Google', userInfo);
+        // console.log('In My SignIn Google', userInfo);
         if (userInfo) {
           const userRef = firestore()
             .collection('Users')
@@ -105,36 +136,48 @@ const GmailSignIn = props => {
     }
   };
 
-  const handleCheck = async newValue => {
-    setAcceptedTerms(newValue);
-    await AsyncStorage.setItem(TERMS_KEY, newValue.toString());
-  };
-
   return (
-    <View style={{alignItems: 'center', justifyContent: 'center'}}>
-      <Text style={{color: 'white', textAlign: 'center', fontWeight: 'bold'}}>
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>
         Join today and start your journey
       </Text>
 
-      {/* Terms of Service Checkbox */}
+
+      {/* Terms Checkbox */}
+      <View style={styles.checkboxContainer}>
+        <CheckBox
+          value={acceptedPolicy}
+          onValueChange={handlePolicyCheck}
+          tintColors={{ true: '#fff', false: '#fff' }}
+          style={{ right: 32 }}
+        />
+        <Text
+          style={styles.policyText}
+          onPress={() => navigation.navigate('PrivacyPolicy')}
+        >
+          I agree to the Policy
+        </Text>
+      </View>
+
+      {/* Terms Checkbox */}
       <View style={styles.checkboxContainer}>
         <CheckBox
           value={acceptedTerms}
           onValueChange={handleCheck}
-          tintColors={{true: '#fff', false: '#fff'}}
+          tintColors={{ true: '#fff', false: '#fff' }}
         />
         <Text
           style={styles.termsText}
           onPress={() =>
             Linking.openURL(
-              'https://docs.google.com/document/d/151LhA1OvP-qOtm49uXdDBhc8ykmeK1h0TT-z8VkacvU/edit?usp=sharing',
+              'https://docs.google.com/document/d/151LhA1OvP-qOtm49uXdDBhc8ykmeK1h0TT-z8VkacvU/edit?usp=sharing'
             )
           }>
           I agree to the Terms of Service
         </Text>
       </View>
 
-      {/* Google Sign-In Button */}
+      {/* Google Sign-In */}
       <TouchableOpacity
         disabled={isSigningIn || !acceptedTerms}
         style={{
@@ -146,15 +189,14 @@ const GmailSignIn = props => {
           borderRadius: 10,
           justifyContent: 'center',
           alignItems: 'center',
-          zIndex: 1,
         }}
         onPress={signIn}>
-        <View style={{flexDirection: 'row', alignItems: 'center', fontSize: 25}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image
             source={require('../Images/google.png')}
-            style={{width: 20, height: 20, marginRight: 5}}
+            style={{ width: 20, height: 20, marginRight: 5 }}
           />
-          <Text style={{color: 'black', fontSize: 18}}>
+          <Text style={{ color: 'black', fontSize: 18 }}>
             {isSigningIn ? 'Signing In...' : 'Sign in with Google'}
           </Text>
         </View>
@@ -162,6 +204,8 @@ const GmailSignIn = props => {
     </View>
   );
 };
+
+export default GmailSignIn;
 
 const styles = StyleSheet.create({
   button: {
@@ -175,17 +219,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     elevation: 6,
     shadowRadius: 15,
-    shadowOffset: {width: 1, height: 13},
+    shadowOffset: { width: 1, height: 13 },
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 15,
+    // marginTop: 15,
+  },
+  policyText: {
+    color: '#f1f1f1',
+    right: 32,
+    textDecorationLine: 'underline',
   },
   termsText: {
     color: '#f1f1f1',
     textDecorationLine: 'underline',
   },
 });
-
-export default GmailSignIn;

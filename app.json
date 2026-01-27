@@ -1,4 +1,7 @@
 {
   "name": "betx",
-  "displayName": "betx"
+  "displayName": "betx",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-2283291470258709~4358674370"
+  }
 }
