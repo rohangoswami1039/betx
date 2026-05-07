@@ -6,9 +6,11 @@ import{ArrowLeft} from '../assets/icons';
 import { WebView } from 'react-native-webview';
 import YouTubeIframe from 'react-native-youtube-iframe';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import GoogleInterstitialAd from '../Components/GoogleAdds/GoogleAdBanner';
 function getYouTubeVideoId(url) {
   const regExp = /^(?:(?:https?:)?\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/;
   const match = url.match(regExp);
+  
 
   if (match && match[1]) {
     return match[1];
@@ -19,7 +21,7 @@ function getYouTubeVideoId(url) {
 
 const VideoAd=(props)=>{
 
-
+const adRef = useRef(null);
 
 const videoLink="https://www.youtube.com/watch?v=kEXBhyUoai8";
 
@@ -37,8 +39,9 @@ const handlePause = () => {
 const insets = useSafeAreaInsets();
 
     return (
-      <ScrollView style={{flex: 1, backgroundColor: '#161616', paddingTop: insets.top, paddingBottom: insets.bottom}}>
-        <View style={{flex: 1, paddingBottom: 20, backgroundColor: '#181829'}}>
+      <ScrollView style={{flex: 1, backgroundColor: '#000000', paddingTop: insets.top, paddingBottom: insets.bottom}}>
+        <GoogleInterstitialAd ref={adRef} />
+        <View style={{flex: 1, paddingBottom: 20, backgroundColor: '#000000'}}>
           {/* <Text>hello </Text> */}
           <View style={{flexDirection: 'row', marginLeft: 28, marginRight: 28}}>
             <ArrowLeft
@@ -66,20 +69,19 @@ const insets = useSafeAreaInsets();
           </View>
 
           <View style={styles.container}>
-            <YouTubeIframe
+            {/* <YouTubeIframe
               ref={youtubePlayerRef}
               videoId={videoId}
               webViewStyle={styles.webView}
               volume={100}
               height={270} // Adjust the height as needed
-            />
+            /> */}
           </View>
           <View
             style={{
-              marginRight: 10,
-              marginLeft: 10,
-              marginBottom: 10,
-              marginTop: -20,
+              padding: 18,
+              justifyContent: 'center',
+              alignContent: 'center'
             }}>
             <Text
               style={{
@@ -87,7 +89,7 @@ const insets = useSafeAreaInsets();
                 fontSize: 14,
                 fontFamily: 'SourceSansPro',
               }}>
-              Please note that betX is not a bookmaker and does not accept bets
+              Please note that EdgePX is not a bookmaker and does not accept bets
               on sports events. Instead, our platform empowers you to make
               informed decisions for your bets.
             </Text>
@@ -229,7 +231,7 @@ const insets = useSafeAreaInsets();
                   fontFamily: 'SourceSansPro',
                 }}>
                 Remember, sports prediction and betting should be an enjoyable
-                experience, and betX is here to provide informed insights to
+                experience, and EdgePX is here to provide informed insights to
                 enhance your betting strategy. Always gamble responsibly and
                 make informed decisions.
               </Text>
@@ -240,9 +242,9 @@ const insets = useSafeAreaInsets();
                 fontSize: 13,
                 fontFamily: 'SourceSansPro',
               }}>
-              At betX, we value responsible gambling and want our users to enjoy
+              At EdgePX, we value responsible gambling and want our users to enjoy
               their betting experience. Should you have any questions or need
-              assistance, feel free to reach out to us at betxperfect@gmail.com
+              assistance, feel free to reach out to us at help@edgepx.com
             </Text>
           </View>
         </View>
@@ -252,8 +254,7 @@ const insets = useSafeAreaInsets();
 
 const styles = StyleSheet.create({
     container: {
-      // flex: 1,
-      marginTop:20
+      marginTop:20,
     },
     webView: {
         alignSelf: 'stretch',

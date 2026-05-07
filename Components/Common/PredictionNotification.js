@@ -15,10 +15,11 @@ const PredictionNotification = ({ prediction, onClose }) => {
                 action,
                 respondedAt: firestore.FieldValue.serverTimestamp(),
             });
-
-            if (action === "viewed" && prediction.formUrl) {
+            console.log(action, "In My use effect----Prdeiction--", prediction);
+            
+            if (action === "viewed" && prediction.link) {
                 // Open Google Form
-                Linking.openURL(prediction.formUrl)
+                Linking.openURL(prediction.link)
                     .catch((err) => console.error("Failed to open URL:", err))
                     .finally(() => onClose?.());
             } else {
@@ -34,10 +35,10 @@ const PredictionNotification = ({ prediction, onClose }) => {
     console.log("PredictionNotification Rendered", prediction);
     return (
         <View style={styles.container}>
-            <Image source={{ uri: prediction.imageUrl }} style={styles.image} />
+            <Image source={{ uri: prediction.image }} style={styles.image} />
             <View style={styles.content}>
+                <Text style={styles.title}>{prediction.heading}</Text>
                 <Text style={styles.subtitle}>{prediction.subtitle}</Text>
-                <Text style={styles.title}>{prediction.title}</Text>
                 <Text style={styles.description}>{prediction.description}</Text>
 
                 {/* Changed button text */}
@@ -47,7 +48,7 @@ const PredictionNotification = ({ prediction, onClose }) => {
                         style={[styles.button, { marginRight: 5 }]} // small spacing between buttons
                         onPress={() => handleResponse("viewed")}
                     >
-                        <Text style={styles.viewText}>VIEW SURVEY →</Text>
+                        <Text style={styles.viewText}>Click here →</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity

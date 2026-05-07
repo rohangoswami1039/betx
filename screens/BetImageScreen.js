@@ -180,29 +180,56 @@ function BetImageScreen({ route, navigation }) {
         <LoadingModal show={showLoadingModal} />
 
         <ScrollView style={{ backgroundColor: '#161616' }}>
-          <View style={{ flexDirection: 'row', marginLeft: 28, marginRight: 28 }}>
-            <ArrowLeft
-              style={{ marginTop: 30 }}
-              onPress={() => navigation.goBack()}
-            />
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 20,
+              paddingTop: 20,
+              marginBottom: 10,
+            }}
+          >
+            {/* Back Button */}
+            <ArrowLeft onPress={() => navigation.goBack()} />
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text
+            {/* Title */}
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 20,
+                fontFamily: 'SourceSansPro',
+                fontWeight: '600',
+              }}
+            >
+              Place a Bet
+            </Text>
+
+            {/* Payment Button */}
+            <TouchableOpacity
+              // onPress={() => navigation.navigate('Payment')}
+              style={{
+                // backgroundColor: '#F63D68',
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 6,
+                width: '20%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {/* <Text
                 style={{
-                  textAlign: 'center',
-                  color: '#ffff',
-                  marginTop: 30,
-                  fontSize: 20,
-                  fontFamily: 'SourceSansPro',
-                  marginLeft: '40%',
-                }}>
-                {' '}
-                Place a bet{' '}
-              </Text>
-              {/* <Pressable onPress={() => navigation.navigate('VideoAd')}>
-                  <Text style={{ color: '#ffff', fontSize: 23, marginLeft: 105, marginTop:30,}}>ⓘ</Text>
-                 </Pressable> */}
-            </View>
+                  color: '#fff',
+                  fontSize: 14,
+                  fontWeight: '700',
+                  top: -2,
+                  letterSpacing: 1
+                }}
+              >
+                Pay
+              </Text> */}
+            </TouchableOpacity>
           </View>
 
           <View
@@ -210,7 +237,7 @@ function BetImageScreen({ route, navigation }) {
               marginLeft: 10,
               marginRight: 10,
               borderRadius: 12,
-              overflow: 'hidden',
+              // overflow: 'hidden',
             }}
           >
             <Image
@@ -220,6 +247,7 @@ function BetImageScreen({ route, navigation }) {
                 width: imageWidth,
                 resizeMode: 'contain',
                 borderRadius: 12,
+                overflow: 'hidden',
               }}
               onLoadStart={() => setShowLoadingModal(true)}
               onLoadEnd={() => setShowLoadingModal(false)}
